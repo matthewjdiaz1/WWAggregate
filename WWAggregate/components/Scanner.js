@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-const queries = require('../postgres/queries.js');
-// const { getProductByBarcode } = require('../postgres/queries.js');
 
 export default Scanner = (props) => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -21,8 +19,8 @@ export default Scanner = (props) => {
 
     // check database to see if code has been scanned before
     // props.fetchBarcode(data);
-    // queries.getProductByBarcode(data);
     console.log('from scanner:', data);
+
     //// if scanned before, show info
 
     // else, ask user to inter name of product

@@ -2,6 +2,7 @@
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
+    "server": "nodemon server/index.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
@@ -9,6 +10,8 @@
   },
   "dependencies": {
     "expo": "~36.0.0",
+    "express-graphql": "^0.9.0",
+    "join-monster": "^2.1.1",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.0.tar.gz",
@@ -16,13 +19,18 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
+    "apollo-server": "^2.9.16",
     "babel-preset-expo": "~8.0.0",
+    "events": "^3.1.0",
     "expo-barcode-scanner": "^8.0.0",
     "express": "^4.17.1",
+    "graphql": "^14.5.8",
+    "jquery": "^3.4.1",
     "pg": "^7.17.1",
     "react-native-gesture-handler": "^1.5.3",
     "react-native-navigation": "^4.5.1",
-    "react-navigation-stack": "^2.0.15"
+    "react-navigation-stack": "^2.0.15",
+    "util": "^0.12.1"
   },
   "private": true
 }
