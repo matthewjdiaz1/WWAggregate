@@ -2,6 +2,10 @@ import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import Scanner from './Scanner.js';
 
+// const queries = require('../postgres/queries.js');
+// const { getProductByBarcode } = require('../postgres/queries.js');
+// import queries from '../postgres/queries.js';
+
 class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -9,9 +13,14 @@ class HomeScreen extends React.Component {
       showScanner: false,
     };
     this.toggleScanner = this.toggleScanner.bind(this);
+    this.fetchBarcode = this.fetchBarcode.bind(this);
   }
   toggleScanner() {
     this.setState({ showScanner: !this.state.showScanner });
+  }
+  fetchBarcode(barcode) {
+    console.log('fetchBarcode with barcode', barcode);
+    // queries.getProductByBarcode(barcode);
   }
 
   render() {
@@ -21,7 +30,7 @@ class HomeScreen extends React.Component {
           <Text style={styles.text} onPress={() => { this.toggleScanner() }}>Open Barcode Scanner</Text>
         ) : (
             // <Text>Close Scanner</Text>
-            <Scanner toggle={this.toggleScanner} />
+            <Scanner toggle={this.toggleScanner} fetchBarcode={this.fetchBarcode} />
           )}
         <Text style={styles.text}> Show Withings CSV Data </Text>
         <Text style={styles.text}> Show MyFitnessPal CSV Data </Text>
