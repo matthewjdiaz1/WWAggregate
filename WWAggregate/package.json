@@ -19,18 +19,13 @@
   },
   "devDependencies": {
     "@babel/core": "^7.0.0",
-    "apollo-server": "^2.9.16",
     "babel-preset-expo": "~8.0.0",
-    "events": "^3.1.0",
     "expo-barcode-scanner": "^8.0.0",
     "express": "^4.17.1",
     "graphql": "^14.5.8",
-    "jquery": "^3.4.1",
     "pg": "^7.17.1",
     "react-native-gesture-handler": "^1.5.3",
     "react-native-navigation": "^4.5.1",
-    "react-navigation-stack": "^2.0.15",
-    "util": "^0.12.1"
-  },
-  "private": true
+    "react-navigation-stack": "^2.0.15"
+  }
 }
