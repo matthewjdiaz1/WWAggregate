@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
-
+const queries = require('../postgres/queries.js');
+// const { getProductByBarcode } = require('../postgres/queries.js');
 
 export default Scanner = (props) => {
   const [hasPermission, setHasPermission] = useState(null);
@@ -16,7 +17,18 @@ export default Scanner = (props) => {
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    // alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+
+    // check database to see if code has been scanned before
+    // props.fetchBarcode(data);
+    // queries.getProductByBarcode(data);
+    console.log('from scanner:', data);
+    //// if scanned before, show info
+
+    // else, ask user to inter name of product
+
+    // then, ask user to take a picture of the nutrition label
+
   };
 
   if (hasPermission === null) {
@@ -25,8 +37,6 @@ export default Scanner = (props) => {
   if (hasPermission === false) {
     return <Text>No access to camera</Text>;
   }
-  // console.log(StyleSheet.absoluteFillObject);
-  // console.log(StyleSheet.scannerBorder);
 
   return (
     <View
