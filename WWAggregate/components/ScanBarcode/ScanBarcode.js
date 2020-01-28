@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
-import { BarCodeScanner } from 'expo-barcode-scanner';
+import { BarCodeScanner } from './node_modules/expo-barcode-scanner';
 
-export default Scanner = (props) => {
+export default ScanBarcode = (props) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
 
@@ -43,15 +43,12 @@ export default Scanner = (props) => {
         flexDirection: 'column',
         justifyContent: 'flex-end',
       }}>
-      <Text style={styles.text} onPress={() => props.toggle()}>Close Barcode Scanner</Text>
+      <Text style={styles.text}> Scan a barcode </Text>
       <BarCodeScanner
         onPress={() => props.toggle()}
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={styles.scannerBorder}
       />
-      {scanned && (
-        <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />
-      )}
     </View>
   );
 }
@@ -66,18 +63,15 @@ const styles = StyleSheet.create({
   },
   scannerBorder: {
     position: "absolute",
-    height: '50%',
-    width: '50%',
-    top: 50, /////////////////////////
+    height: '100%',
+    width: '100%',
+    // top: 100, /////////////////////////
   },
   text: {
+    top: 25,
     fontSize: 35,
     fontWeight: 'bold',
     textAlign: 'center',
-    color: 'turquoise',
-    backgroundColor: 'fuchsia',
-    textShadowColor: 'blue',
-    textShadowRadius: 5,
-    textShadowOffset: { width: -2, height: 2 },
+    color: 'rgb(111, 218, 242)',
   },
 });

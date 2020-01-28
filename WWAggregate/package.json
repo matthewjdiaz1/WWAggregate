@@ -3,15 +3,18 @@
   "scripts": {
     "start": "expo start",
     "server": "nodemon server/index.js",
+    "apollo": "nodemon server/apollo.js",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web",
     "eject": "expo eject"
   },
   "dependencies": {
+    "apollo-server": "^2.9.16",
     "expo": "~36.0.0",
     "express-graphql": "^0.9.0",
     "join-monster": "^2.1.1",
+    "lodash": "^4.17.15",
     "react": "~16.9.0",
     "react-dom": "~16.9.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-36.0.0.tar.gz",
