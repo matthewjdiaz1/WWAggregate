@@ -1,6 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, Modal } from 'react-native';
 import ScanBarcode from './ScanBarcode/ScanBarcode.js';
+import ItemNotFoundModal from './ScanBarcode/ItemNotFoundModal.js';
+import ItemNotFound from './ScanBarcode/ItemNotFound';
 
 class HomeScreen extends React.Component {
   constructor(props) {
@@ -22,7 +24,9 @@ class HomeScreen extends React.Component {
     return (
       <View style={styles.container}>
         {/* scan a barcode button */}
-        <ScanBarcode style={styles.scanner} toggle={this.toggleScanner} fetchBarcode={this.fetchBarcode} />
+        {/* <ScanBarcode style={styles.scanner} toggle={this.toggleScanner} fetchBarcode={this.fetchBarcode} /> */}
+        {/* <ItemNotFoundModal /> */}
+        <ItemNotFound />
       </View>
     );
   }

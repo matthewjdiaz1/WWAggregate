@@ -1,4 +1,5 @@
 import React from 'react';
+// import "circular-std" from "circular-std";
 import { StyleSheet, Text, View } from 'react-native';
 import HomeScreen from './components/HomeScreen.js';
 // import { createAppContainer } from 'react-navigation';
