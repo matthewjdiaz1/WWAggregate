@@ -1,27 +1,31 @@
 // // import React from 'react';
-// import { createAppContainer } from 'react-navigation';
-// import { createStackNavigator } from 'react-navigation-stack';
-// import MenuGradeScreen from '../screens/MenuGradeScreen';
-// import AuditQuestionsScreen from '../screens/AuditQuestionsScreen';
-// import MenuReviewScreen from '../screens/MenuReviewScreen';
-// import SuccessScreen from '../screens/SuccessScreen';
+import { createAppContainer } from 'react-navigation';
+import { createStackNavigator } from 'react-navigation-stack';
 
-// const AppContainer = createAppContainer(
-//   createStackNavigator(
-//     {
-//       MenuGrade: MenuGradeScreen,
-//       AuditQuestions: AuditQuestionsScreen,
-//       MenuReview: MenuReviewScreen,
-//       Success: SuccessScreen,
-//     },
-//     {
-//       defaultNavigationOptions: {
-//         header: null,
-//       }
-//     },
-//   )
-// );
 
-// export default AppContainer;
+import ScanBarcodeScreen from '../screens/ScanBarcodeScreen';
+import ItemNotFoundScreen from '../screens/ItemNotFoundScreen';
 
-// TODO, point from app to homescreen
+
+const RootStack = createStackNavigator(
+  {
+    ScanBarcode: ScanBarcodeScreen,
+    ItemNotFound: ItemNotFoundScreen,
+    ScanBarcode: ScanBarcodeScreen,
+  },
+  // {
+  //   initialRouteName: 'ItemNotFound',
+  // },
+  {
+    defaultNavigationOptions: {
+      headerShown: false,
+    }
+    // defaultNavigationOptions: {
+    //   header: null,
+    // }
+  },
+);
+
+const AppContainer = createAppContainer(RootStack);
+
+export default AppContainer;

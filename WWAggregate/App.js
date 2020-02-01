@@ -1,22 +1,17 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { ApolloProvider } from '@apollo/react-hooks';
+import ApolloClient from 'apollo-boost';
 
-import ItemNotFound from './screens/ItemNotFound';
-import ScanBarcode from './screens/ScanBarcode';
-// import { createAppContainer } from 'react-navigation';
-// import { createStackNavigator } from 'react-navigation-stack';
+import AppContainer from './navigation/AppContainer.js';
+
+const client = new ApolloClient({
+  uri: 'http://localhost:4000/api',
+});
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <ItemNotFound />
-      {/* <ScanBarcode /> */}
-    </View>
+    <ApolloProvider client={client}>
+      <AppContainer />
+    </ApolloProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

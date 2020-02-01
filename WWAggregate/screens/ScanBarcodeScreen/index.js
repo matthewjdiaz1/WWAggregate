@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
+import { withNavigation } from 'react-navigation';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+// import { Query } from 'react-apollo';
+// import { gql } from 'apollo-boost';
 
 import styles from './styles';
 
-export default ScanBarcode = (props) => {
+const ScanBarcodeScreen = (props) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
 
@@ -22,7 +25,8 @@ export default ScanBarcode = (props) => {
     // check database to see if code has been scanned before
     // props.fetchBarcode(data);
     console.log('from scanner:', data);
-
+    setScanned(false);
+    props.navigation.navigate('ItemNotFound');
     //// if scanned before, show info
 
     // else, ask user to inter name of product
@@ -45,7 +49,7 @@ export default ScanBarcode = (props) => {
         flexDirection: 'column',
         justifyContent: 'flex-end',
       }}>
-      <Text style={styles.text}> Scan a barcode </Text>
+      <Text style={styles.text}>Scan a barcode</Text>
       <BarCodeScanner
         onPress={() => props.toggle()}
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
@@ -54,3 +58,5 @@ export default ScanBarcode = (props) => {
     </View>
   );
 }
+
+export default withNavigation(ScanBarcodeScreen);
