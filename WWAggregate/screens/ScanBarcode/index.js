@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, StyleSheet, Button } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
+import styles from './styles';
+
 export default ScanBarcode = (props) => {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
@@ -52,26 +54,3 @@ export default ScanBarcode = (props) => {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    height: 10,
-    width: '100%',
-  },
-  scannerBorder: {
-    position: "absolute",
-    height: '100%',
-    width: '100%',
-    // top: 100, /////////////////////////
-  },
-  text: {
-    top: 25,
-    fontSize: 35,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    color: 'rgb(111, 218, 242)',
-  },
-});

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, Text, TextInput } from 'react-native';
-import Button from '../../Button';
+import Button from '../../components/Button';
 import styles from './styles';
 
 class ItemNotFound extends React.Component {

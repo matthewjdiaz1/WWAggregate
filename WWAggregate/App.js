@@ -1,14 +1,16 @@
 import React from 'react';
-// import "circular-std" from "circular-std";
 import { StyleSheet, Text, View } from 'react-native';
-import HomeScreen from './components/HomeScreen.js';
+
+import ItemNotFound from './screens/ItemNotFound';
+import ScanBarcode from './screens/ScanBarcode';
 // import { createAppContainer } from 'react-navigation';
 // import { createStackNavigator } from 'react-navigation-stack';
 
 export default function App() {
   return (
     <View style={styles.container}>
-      <HomeScreen />
+      <ItemNotFound />
+      {/* <ScanBarcode /> */}
     </View>
   );
 }
