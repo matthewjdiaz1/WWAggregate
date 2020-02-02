@@ -1,32 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View } from 'react-native';
+import { Text, View, TouchableHighlight } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { BarCodeScanner } from 'expo-barcode-scanner';
+import Svg, { Polygon } from 'react-native-svg';
 // import { Query } from 'react-apollo';
 // import { gql } from 'apollo-boost';
 
-import Svg, {
-  Circle,
-  Ellipse,
-  G,
-  TSpan,
-  TextPath,
-  Path,
-  Polygon,
-  Polyline,
-  Line,
-  Rect,
-  Use,
-  Image,
-  Symbol,
-  Defs,
-  LinearGradient,
-  RadialGradient,
-  Stop,
-  ClipPath,
-  Pattern,
-  Mask,
-} from 'react-native-svg';
 
 import styles from './styles';
 
@@ -51,6 +30,7 @@ const ScanBarcodeScreen = ({ navigation }) => {
     // props.fetchBarcode(data);
     console.log('from scanner:', data);
     navigation.navigate('ItemNotFound');
+    setScanned(false);
     // setScanned(false);
     //// if scanned before, show info
 
@@ -76,13 +56,15 @@ const ScanBarcodeScreen = ({ navigation }) => {
       />
       <Text style={styles.text}>Scan a barcode</Text>
       <View style={styles.xButton}>
-        <Svg height="20" width="20" viewBox="0 0 300 300">
-          <Polygon
-            points="298.667,30.187 268.48,0 149.333,119.147 30.187,0 0,30.187 119.147,149.333 0,268.48 30.187,298.667     149.333,179.52 268.48,298.667 298.667,268.48 179.52,149.333"
-            fill="white"
-            strokeWidth="5"
-          />
-        </Svg>
+        <TouchableHighlight onPress={() => console.log('navigate from ScanBarcode')}>
+          <Svg height="20" width="20" viewBox="0 0 300 300">
+            <Polygon
+              points="298.667,30.187 268.48,0 149.333,119.147 30.187,0 0,30.187 119.147,149.333 0,268.48 30.187,298.667     149.333,179.52 268.48,298.667 298.667,268.48 179.52,149.333"
+              fill="white"
+              strokeWidth="5"
+            />
+          </Svg>
+        </TouchableHighlight>
       </View>
       <View style={styles.overlay}></View>
       <Svg height="22" width="22" style={styles.cornerTL}>

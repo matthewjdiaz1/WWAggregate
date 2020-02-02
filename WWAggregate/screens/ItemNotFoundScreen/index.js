@@ -4,6 +4,10 @@ import { withNavigation } from 'react-navigation';
 import Button from '../../components/Button';
 import styles from './styles';
 
+// const ItemNotFoundScreen = () => {
+//   const [text, setText] = useState('');
+
+// }
 class ItemNotFoundScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -12,8 +16,8 @@ class ItemNotFoundScreen extends React.Component {
     };
     this.nav = this.nav.bind(this);
   }
-  nav() {
-    this.props.navigation.navigate('ScanBarcode');
+  nav(nav) {
+    this.props.navigation.navigate(nav);
   }
 
   render() {
@@ -29,9 +33,8 @@ class ItemNotFoundScreen extends React.Component {
           value={this.state.text}>
         </TextInput>
         <View style={styles.buttonContainer}>
-          <Button label="Cancel" />
-          {/* <Button onClick={() => nav()} label="Scan Label" cta /> */}
-          <Button onPress={() => this.nav()} label="Scan Label" cta />
+          <Button onPress={() => this.nav('ScanBarcode')} label="Cancel" />
+          <Button onPress={() => this.nav('ScanNutrition')} label="Scan Label" cta />
         </View>
       </View>
     );
