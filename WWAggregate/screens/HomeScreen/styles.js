@@ -1,6 +1,8 @@
 export default {
   container: {
     flex: 1,
+    padding: 50,
+    margin: 50,
     // backgroundColor: 'purple',
     // borderColor: 'turquoise',
     // alignItems: 'center',

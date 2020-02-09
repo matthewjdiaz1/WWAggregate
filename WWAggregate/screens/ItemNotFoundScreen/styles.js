@@ -33,7 +33,6 @@ export default {
     fontSize: 18,
     fontWeight: '500',
     lineHeight: 23,
-    color: "#B8B6B6",
   },
   buttonContainer: {
     position: "absolute",

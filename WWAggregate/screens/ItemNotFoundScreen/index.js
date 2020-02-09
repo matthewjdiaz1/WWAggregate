@@ -12,15 +12,13 @@ class ItemNotFoundScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      text: '',
+      name: '',
+      barcode: this.props.navigation.state.params.barcode,
     };
-    this.nav = this.nav.bind(this);
-  }
-  nav(nav) {
-    this.props.navigation.navigate(nav);
   }
 
   render() {
+    console.log(this.state.name);
     return (
       <View style={styles.container}>
         <Text style={styles.header}>Item not found</Text>
@@ -29,12 +27,17 @@ class ItemNotFoundScreen extends React.Component {
         <TextInput
           style={styles.input}
           placeholder="ex: Organic Applesauce"
-          onChangeText={(text) => this.setState({ text })}
+          onChangeText={(name) => this.setState({ name })}
           value={this.state.text}>
         </TextInput>
         <View style={styles.buttonContainer}>
-          <Button onPress={() => this.nav('ScanBarcode')} label="Cancel" />
-          <Button onPress={() => this.nav('ScanNutrition')} label="Scan Label" cta />
+          <Button onPress={() => this.props.navigation.goBack()} label="Cancel" />
+          <Button
+            onPress={() => this.props.navigation.navigate('ScanNutrition', {
+              name: this.state.name,
+              barcode: this.state.barcode,
+            })}
+            label="Scan Label" cta />
         </View>
       </View>
     );

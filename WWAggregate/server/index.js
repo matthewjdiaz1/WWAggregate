@@ -4,6 +4,10 @@ const app = express();
 const PORT = process.env.PORT || 4000; // if deployed, will read environment variable
 
 const schema = require('./schema/products.js');
+
+const ip = require('ip');
+console.log(ip.address());
+
 app.use('/api', graphqlHTTP({
   schema,
   graphiql: true,

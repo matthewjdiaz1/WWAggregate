@@ -1,7 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, Modal } from 'react-native';
-// import ScanBarcode from '../../components/ScanBarcode';
-// import ItemNotFound from '../ItemNotFound';
+import { Text, View } from 'react-native';
+import gql from "graphql-tag";
+import { Query } from "react-apollo";
+
+import SearchBarcodes from '../../components/Queries/GetBarcode';
 
 import styles from './styles';
 
@@ -9,23 +11,20 @@ class HomeScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      showScanner: false,
+      barcode: '42069',
     };
-    this.toggleScanner = this.toggleScanner.bind(this);
     this.fetchBarcode = this.fetchBarcode.bind(this);
   }
-  toggleScanner() {
-    this.setState({ showScanner: !this.state.showScanner });
-  }
   fetchBarcode(barcode) {
-    console.log('fetchBarcode with barcode', barcode);
+    console.log('barcode', barcode);
   }
 
   render() {
+    console.log(() => fetchBarcode('fetch test'));
     return (
       <View style={styles.container}>
-        {/* <ScanBarcode style={styles.scanner} toggle={this.toggleScanner} fetchBarcode={this.fetchBarcode} /> */}
-        <ItemNotFound />
+        <Text onPress={() => this.fetchBarcode(this.state.barcode)}>test</Text>
+        <Barcodes onBarcodeSelected={this.state.barcode}></Barcodes>
       </View>
     );
   }
