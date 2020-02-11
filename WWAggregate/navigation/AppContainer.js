@@ -1,4 +1,6 @@
-import { createAppContainer } from 'react-navigation';
+import * as firebase from 'firebase';
+import firebaseConfig from '../firebaseConfig';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 
 import ScanBarcodeScreen from '../screens/ScanBarcodeScreen';
@@ -6,30 +8,46 @@ import DisplayProductScreen from '../screens/DisplayProductScreen';
 import ItemNotFoundScreen from '../screens/ItemNotFoundScreen';
 import ScanNutritionScreen from '../screens/ScanNutritionScreen';
 import DisplayPic from '../components/DisplayPic';
-// import HomeScreen from '../screens/HomeScreen';
+import SignInScreen from '../screens/SignInScreen';
+import SignUpScreen from '../screens/SignUpScreen';
+import LoadingScreen from '../screens/LoadingScreen';
 
-// import GetBarcode from '../components/queries/GetBarcode';
+firebase.initializeApp(firebaseConfig);
+// firebase.analytics(); // TODO investigate
 
-const RootStack = createStackNavigator(
+const AuthStack = createStackNavigator({
+  // Loading: LoadingScreen,
+  SignIn: SignInScreen,
+  SignUp: SignUpScreen,
+});
+
+const AppStack = createStackNavigator(
   {
     // DelayedQuery: DelayedQuery,
-    // HomeScreen: HomeScreen,
     ScanBarcode: ScanBarcodeScreen,
     ItemNotFound: ItemNotFoundScreen,
     ScanNutrition: ScanNutritionScreen,
     DisplayProduct: DisplayProductScreen,
     DisplayPic: DisplayPic,
   },
-  // {
-  //   initialRouteName: 'ItemNotFound',
-  // },
   {
     defaultNavigationOptions: {
       headerShown: false,
     }
   },
-);
+)
 
-const AppContainer = createAppContainer(RootStack);
+const AppContainer = createAppContainer(
+  createSwitchNavigator(
+    {
+      // Loading: LoadingScreen,
+      Auth: AuthStack,
+      App: AppStack,
+    },
+    {
+      initialRouteName: 'Auth',
+    }
+  )
+);
 
 export default AppContainer;
