@@ -25,5 +25,6 @@ export default {
     fontSize: 18,
     fontWeight: '500',
     lineHeight: 23,
+    // backgroundColor: '#DDDDDD',
   },
 };

@@ -11,19 +11,34 @@ import DisplayPic from '../components/DisplayPic';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import LoadingScreen from '../screens/LoadingScreen';
+import HomeScreen from '../screens/HomeScreen';
 
 firebase.initializeApp(firebaseConfig);
-// firebase.analytics(); // TODO investigate
+// firebase.analytics(); // TODO - investigate
 
-const AuthStack = createStackNavigator({
-  // Loading: LoadingScreen,
-  SignIn: SignInScreen,
-  SignUp: SignUpScreen,
-});
-
-const AppStack = createStackNavigator(
+const AuthStack = createStackNavigator(
   {
-    // DelayedQuery: DelayedQuery,
+    SignIn: SignInScreen,
+    SignUp: SignUpScreen,
+  },
+  {
+    defaultNavigationOptions: {
+      headerShown: false,
+    }
+  },
+);
+const HomeStack = createStackNavigator(
+  {
+    Home: HomeScreen,
+  },
+  {
+    defaultNavigationOptions: {
+      headerShown: false,
+    },
+  },
+)
+const ScanBarcodeStack = createStackNavigator(
+  {
     ScanBarcode: ScanBarcodeScreen,
     ItemNotFound: ItemNotFoundScreen,
     ScanNutrition: ScanNutritionScreen,
@@ -40,13 +55,14 @@ const AppStack = createStackNavigator(
 const AppContainer = createAppContainer(
   createSwitchNavigator(
     {
-      // Loading: LoadingScreen,
+      Loading: LoadingScreen,
       Auth: AuthStack,
-      App: AppStack,
+      App: HomeStack,
+      ScanBarcode: ScanBarcodeStack,
     },
     {
-      initialRouteName: 'Auth',
-    }
+      initialRouteName: 'Loading',
+    },
   )
 );
 

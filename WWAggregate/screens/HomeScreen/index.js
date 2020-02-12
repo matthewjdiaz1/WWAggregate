@@ -1,33 +1,31 @@
-import React from 'react';
-import { Text, View } from 'react-native';
-import gql from "graphql-tag";
-import { Query } from "react-apollo";
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput } from 'react-native';
+import { withNavigation } from 'react-navigation';
+import * as firebase from 'firebase';
 
-import SearchBarcodes from '../../components/Queries/GetBarcode';
-
+import Button from '../../components/Button';
 import styles from './styles';
 
-class HomeScreen extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      barcode: '42069',
-    };
-    this.fetchBarcode = this.fetchBarcode.bind(this);
-  }
-  fetchBarcode(barcode) {
-    console.log('barcode', barcode);
-  }
+const HomeScreen = ({ navigation }) => {
+  // useEffect(() => {
 
-  render() {
-    console.log(() => fetchBarcode('fetch test'));
-    return (
-      <View style={styles.container}>
-        <Text onPress={() => this.fetchBarcode(this.state.barcode)}>test</Text>
-        <Barcodes onBarcodeSelected={this.state.barcode}></Barcodes>
-      </View>
-    );
+  // }, []); // passing an empty array as second argument triggers the callback in useEffect only after the initial render thus replicating `componentDidMount` lifecycle behaviour
+
+  const handleSignOut = () => {
+    firebase.auth().signOut().then(() => {
+      console.log(`Signing out`);
+      navigation.navigate('Auth');
+    }).catch(error => {
+      console.log(error.message);
+    });
   }
+  return (
+    <View style={styles.container}>
+      <Text style={styles.header}>HomeScreen</Text>
+      <Button label={'Scan Barcode'} cta onPress={() => navigation.navigate('ScanBarcode')} />
+      <Button label={'Sign out'} onPress={() => handleSignOut()} />
+    </View>
+  );
 }
 
-export default HomeScreen;
+export default withNavigation(HomeScreen);

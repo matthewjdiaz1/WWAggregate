@@ -17,7 +17,7 @@ export default {
   },
   text: {
     textAlign: "left",
-    paddingTop: "18%",
+    paddingTop: 50,
     fontSize: 18,
     fontWeight: '500',
     lineHeight: 23,

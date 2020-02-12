@@ -8,21 +8,16 @@ import styles from './styles';
 const SignInScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [user, setUser] = useState(null);
 
   const handleSignIn = () => {
-    let err = null;
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
       .catch(error => {
         console.log(error.message);
         alert(error.message);
-        if (error) err = error;
       });
-    if (!err) {
-      navigation.navigate('App');
-      console.log('err paths', navigation.paths);
-    }
   }
 
   return (
@@ -45,8 +40,10 @@ const SignInScreen = ({ navigation }) => {
           secureTextEntry
           value={password} />
       </View>
-      <Text style={styles.text}>forgot password?</Text>
-      <Text style={[styles.text, { color: 'red' }]} onPress={() => navigation.navigate('SignUp')}>Sign up.</Text>
+      <Text style={[styles.text, { color: 'black' }]}>New user? Sign up
+        <Text style={[styles.text, { color: 'red' }]} onPress={() => navigation.navigate('SignUp')}> here</Text>
+        .
+      </Text>
       <View style={styles.buttonContainer}>
         <Button onPress={handleSignIn} label="Sign In" cta />
         <Button onPress={() => navigation.goBack()} label="cancel" />

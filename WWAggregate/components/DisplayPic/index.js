@@ -8,9 +8,10 @@ const DisplayPic = ({ navigation, pic }) => {
   return (
     <View style={styles.container}>
       <Image
-        style={[styles.image, { height: navigation.state.params.pic.height, width: navigation.state.params.pic.width }]}
+        // style={[styles.image, { height: navigation.state.params.pic.height, width: navigation.state.params.pic.width }]}
         style={[styles.image, { height: '100%', width: '100%' }]}
         source={{ uri: navigation.state.params.pic.uri }}
+        onPress={() => navigation.goBack()}
       />
     </View>
   );

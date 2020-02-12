@@ -1,30 +1,24 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, ActivityIndicator } from 'react-native';
+import { withNavigation } from 'react-navigation';
 import * as firebase from 'firebase';
 
 import styles from './styles';
 
-export default class Loading extends React.Component {
-  constructor(props) {
-    super(props);
-    // this.state = {
-
-    // };
-  }
-
-  componentDidMount() {
+const Loading = ({ navigation }) => {
+  useEffect(() => {
     firebase.auth().onAuthStateChanged(user => {
-      console.log(user);
-      this.props.navigation.navigate(user ? "App" : "Auth");
+      console.log('user', user);
+      user ? navigation.navigate('App', { user }) : navigation.navigate('Auth');
     });
-  };
+  }, []); // passing an empty array as second argument triggers the callback in useEffect only after the initial render thus replicating `componentDidMount` lifecycle behaviour
 
-  render() {
-    return (
-      <View style={styles.container} >
-        <Text style={styles.text} onPress={() => this.props.navigation.navigate('SignIn')}>loading...</Text>
-        <ActivityIndicator size='large' />
-      </View>
-    );
-  };
+  return (
+    <View style={styles.container} >
+      <Text style={styles.text} onPress={() => navigation.navigate('Auth')}>Loading...</Text>
+      <ActivityIndicator size='large' />
+    </View>
+  );
 }
+
+export default withNavigation(Loading);
