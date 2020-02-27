@@ -18,7 +18,6 @@ class ItemNotFoundScreen extends React.Component {
   }
 
   render() {
-    console.log(this.state.name);
     return (
       <View style={styles.container}>
         <Text style={styles.header}>Item not found</Text>
@@ -34,8 +33,10 @@ class ItemNotFoundScreen extends React.Component {
           <Button onPress={() => this.props.navigation.goBack()} label="Cancel" />
           <Button
             onPress={() => this.props.navigation.navigate('ScanNutrition', {
-              name: this.state.name,
-              barcode: this.state.barcode,
+              product: {
+                name: this.state.name,
+                barcode: this.state.barcode,
+              }
             })}
             label="Scan Label" cta />
         </View>

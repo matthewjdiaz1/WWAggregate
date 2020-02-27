@@ -7,8 +7,8 @@ import styles from './styles';
 
 const ScanNutritionScreen = ({ navigation }) => {
   const [hasPermission, setHasPermission] = useState(null);
+  const [product, setProduct] = useState(navigation.state.params.product);
   const [type, setType] = useState(Camera.Constants.Type.back);
-  const [pic, setPic] = useState(null);
   const [camera, setCamera] = useState(null);
 
   useEffect(() => {
@@ -18,11 +18,12 @@ const ScanNutritionScreen = ({ navigation }) => {
     })();
   }, []);
 
-  snap = async () => {
+  const snap = async () => {
     if (camera) {
       let photo = await camera.takePictureAsync();
       console.log(photo);
-      navigation.navigate('DisplayPic', {
+      navigation.navigate('DisplayProduct', {
+        product,
         pic: photo,
       });
     }
@@ -38,7 +39,7 @@ const ScanNutritionScreen = ({ navigation }) => {
           <TouchableOpacity
             style={styles.takePic}
             onPress={() => snap()}>
-            <Text style={styles.text}>Take Pic</Text>
+            <Text style={[styles.text, { justifyContent: 'center', alignItems: 'center' }]}>Take Pic</Text>
           </TouchableOpacity>
         </View>
       </Camera>

@@ -12,18 +12,19 @@ const HomeScreen = ({ navigation }) => {
   // }, []); // passing an empty array as second argument triggers the callback in useEffect only after the initial render thus replicating `componentDidMount` lifecycle behaviour
 
   const handleSignOut = () => {
-    firebase.auth().signOut().then(() => {
-      console.log(`Signing out`);
-      navigation.navigate('Auth');
-    }).catch(error => {
-      console.log(error.message);
-    });
+    // firebase.auth().signOut().then(() => {
+    //   console.log(`Signing out`);
+    //   navigation.navigate('Auth');
+    // }).catch(error => {
+    //   console.log(error.message);
+    // });
+    navigation.navigate('Auth');
   }
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>HomeScreen</Text>
+      <Text style={styles.header}>Today</Text>
       <Button label={'Scan Barcode'} cta onPress={() => navigation.navigate('ScanBarcode')} />
-      <Button label={'Sign out'} onPress={() => handleSignOut()} />
+      <Button label={'Sign out'} cta onPress={() => handleSignOut()} />
     </View>
   );
 }
