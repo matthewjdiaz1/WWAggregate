@@ -5,7 +5,7 @@ import styles from './styles';
 
 const Button = ({ label, cta, onPress }) => (
   <View style={cta ? styles.buttonViewCTA : styles.buttonView} onPress={onPress}>
-    <TouchableHighlight onPress={onPress}>
+    <TouchableHighlight onPress={onPress} underlayColor={'#B4EDFA'}>
       <Text style={styles.button}>
         {label}
       </Text>
