@@ -28,6 +28,10 @@ const User = new GraphQLObjectType({
         type: GraphQLString,
         resolve: (user) => user.password,
       },
+      jwt: {
+        type: GraphQLString,
+        resolve: (user) => user.jwt,
+      },
       firstName: {
         type: GraphQLString,
         resolve: (user) => user.firstName,
@@ -36,10 +40,18 @@ const User = new GraphQLObjectType({
         type: GraphQLString,
         resolve: (user) => user.lastName,
       },
-      mealEntries: {
-        type: new GraphQLList(MealEntry),
-        resolve: (user) => user.getMealEntry(),
-      }
+      createdAt: {
+        type: GraphQLString,
+        resolve: (user) => user.createdAt,
+      },
+      updatedAt: {
+        type: GraphQLString,
+        resolve: (user) => user.updatedAt,
+      },
+      // foodEntry: {
+      //   type: new GraphQLList(FoodEntry),
+      //   resolve: (user) => user.getFoodEntry(),
+      // }
     };
   }
 });
@@ -67,7 +79,15 @@ const Item = new GraphQLObjectType({
       nutrition: {
         type: Nutrition,
         resolve: (item) => item.getNutrition(),
-      }
+      },
+      createdAt: {
+        type: GraphQLString,
+        resolve: (item) => item.createdAt,
+      },
+      updatedAt: {
+        type: GraphQLString,
+        resolve: (item) => item.updatedAt,
+      },
     };
   }
 });
@@ -79,6 +99,10 @@ const Nutrition = new GraphQLObjectType({
       id: {
         type: GraphQLInt,
         resolve: (nutrition) => nutrition.id,
+      },
+      imageId: {
+        type: GraphQLInt,
+        resolve: (nutrition) => nutrition.imageId,
       },
       calories: {
         type: GraphQLString,
@@ -92,41 +116,57 @@ const Nutrition = new GraphQLObjectType({
         type: GraphQLString,
         resolve: (nutrition) => nutrition.sugar,
       },
+      fat: {
+        type: GraphQLString,
+        resolve: (nutrition) => nutrition.sugar,
+      },
       carbohydrates: {
         type: GraphQLString,
         resolve: (nutrition) => nutrition.carbohydrates,
       },
+      createdAt: {
+        type: GraphQLString,
+        resolve: (nutrition) => nutrition.createdAt,
+      },
+      updatedAt: {
+        type: GraphQLString,
+        resolve: (nutrition) => nutrition.updatedAt,
+      },
     };
   }
 });
-const MealEntry = new GraphQLObjectType({
-  name: `MealEntry`,
+const FoodEntry = new GraphQLObjectType({
+  name: `FoodEntry`,
   description: `This represents a food entry`,
   fields: () => {
     return {
       id: {
         type: GraphQLInt,
-        resolve: (mealEntry) => mealEntry.id,
+        resolve: (foodEntry) => foodEntry.id,
       },
       userId: {
         type: GraphQLInt,
-        resolve: (mealEntry) => mealEntry.userId,
+        resolve: (foodEntry) => foodEntry.userId,
       },
       itemId: {
         type: GraphQLInt,
-        resolve: (mealEntry) => mealEntry.itemId,
+        resolve: (foodEntry) => foodEntry.itemId,
       },
       servingSize: {
         type: GraphQLString,
-        resolve: (mealEntry) => mealEntry.servingSize,
+        resolve: (foodEntry) => foodEntry.servingSize,
       },
-      dateCreated: {
+      dayCreated: {
         type: GraphQLString,
-        resolve: (mealEntry) => mealEntry.dateCreated,
+        resolve: (foodEntry) => foodEntry.dayCreated,
       },
-      timeCreated: {
+      createdAt: {
         type: GraphQLString,
-        resolve: (mealEntry) => mealEntry.timeCreated,
+        resolve: (foodEntry) => foodEntry.createdAt,
+      },
+      updatedAt: {
+        type: GraphQLString,
+        resolve: (foodEntry) => foodEntry.updatedAt,
       },
     };
   }
@@ -134,7 +174,7 @@ const MealEntry = new GraphQLObjectType({
 
 const Query = new GraphQLObjectType({
   name: `Query`,
-  description: `This is a root query.`,
+  description: `This is the root query.`,
   fields: () => {
     return {
       user: {
@@ -144,8 +184,11 @@ const Query = new GraphQLObjectType({
           firstName: { type: GraphQLString },
           lastName: { type: GraphQLString },
           email: { type: GraphQLString },
+          jwt: { type: GraphQLString },
+          createdAt: { type: GraphQLString },
+          updatedAt: { type: GraphQLString },
         },
-        resolve: (root, args) => db.models.user.findOne({ where: args }),
+        resolve: (root, args, context) => db.models.user.findOne({ where: args }),
       },
       users: {
         type: new GraphQLList(User),
@@ -154,8 +197,21 @@ const Query = new GraphQLObjectType({
           firstName: { type: GraphQLString },
           lastName: { type: GraphQLString },
           email: { type: GraphQLString },
+          jwt: { type: GraphQLString },
+          createdAt: { type: GraphQLString },
+          updatedAt: { type: GraphQLString },
         },
-        resolve: (root, args) => db.models.user.findAll({ where: args }),
+        resolve: (root, args, context) => db.models.user.findAll({ where: args }),
+      },
+      item: {
+        type: Item,
+        args: {
+          id: { type: GraphQLInt },
+          name: { type: GraphQLString },
+          barcode: { type: GraphQLString },
+          barcodeType: { type: GraphQLString },
+        },
+        resolve: (root, args, context) => db.models.item.findOne({ where: args }),
       },
       items: {
         type: new GraphQLList(Item),
@@ -165,31 +221,35 @@ const Query = new GraphQLObjectType({
           barcode: { type: GraphQLString },
           barcodeType: { type: GraphQLString },
         },
-        resolve: (root, args) => db.models.item.findAll({ where: args }),
+        resolve: (root, args, context) => db.models.item.findAll({ where: args }),
       },
       nutrition: {
-        type: new GraphQLList(Nutrition),
+        type: Nutrition,
         args: {
           id: { type: GraphQLInt },
+          itemId: { type: GraphQLInt },
           calories: { type: GraphQLString },
           sugar: { type: GraphQLString },
+          fat: { type: GraphQLString },
           protein: { type: GraphQLString },
           carbohydrates: { type: GraphQLString },
         },
-        resolve: (root, args) => db.models.nutrition.findAll({ where: args }),
+        resolve: (root, args, context) => db.models.nutrition.findOne({ where: args }),
       },
-      mealEntries: {
-        type: new GraphQLList(MealEntry),
+      foodEntries: {
+        type: new GraphQLList(FoodEntry),
         args: {
           id: { type: GraphQLInt },
           userId: { type: GraphQLInt },
           itemId: { type: GraphQLInt },
           servingSize: { type: GraphQLString },
-          dateCreated: { type: GraphQLString },
-          timeCreated: { type: GraphQLString },
+          dayCreated: { type: GraphQLString },
+          createdAt: { type: GraphQLString },
+          updatedAt: { type: GraphQLString },
         },
-        resolve: (root, args) => db.models.mealEntry.findAll({ where: args }),
+        resolve: (root, args, context) => db.models.foodEntry.findAll({ where: args }),
       },
+      // ...
     };
   }
 });
@@ -199,6 +259,52 @@ const Mutation = new GraphQLObjectType({
   description: 'creates new mutations',
   fields() {
     return {
+      signIn: {
+        type: User,
+        args: {
+          email: { type: new GraphQLNonNull(GraphQLString) },
+          password: { type: new GraphQLNonNull(GraphQLString) },
+        },
+        resolve: async (root, args, context) => {
+          const user = await db.models.user.findOne({ where: { email: args.email.toLowerCase() } });
+          if (!user) throw new Error('Email not found');
+
+          const validPassword = await bcrypt.compare(args.password, user.password);
+          if (!validPassword) throw new Error('Incorrect password');
+
+          // If the users email and password match out database,
+          // return a JWT
+          // The client can store the JWT forever or until we set it to expire.
+          // https://medium.com/react-native-training/building-chatty-part-7-authentication-in-graphql-cd37770e5ab3
+          const token = jwt.sign({ userId: user.id, email: user.email }, 'testSecret', { expiresIn: '5m' });
+          user.jwt = token;
+          context.userId = user.id;
+          context.jwt = token;
+          await user.save();
+          console.log('context', context);
+          return user;
+        },
+      },
+      signUp: {
+        type: User,
+        args: {
+          email: { type: new GraphQLNonNull(GraphQLString) },
+          password: { type: new GraphQLNonNull(GraphQLString) },
+          firstName: { type: GraphQLString },
+          lastName: { type: GraphQLString },
+        },
+        resolve: async (root, args) => {
+          const existingUser = await db.models.user.findOne({ where: { email: args.email } });
+          if (existingUser) throw new Error('Email already in use');
+          const hash = await bcrypt.hash(args.password, 10);
+          return db.models.user.create({
+            email: args.email.toLowerCase(),
+            password: hash,
+            firstName: args.firstName,
+            lastName: args.lastName,
+          });
+        },
+      },
       addItem: {
         type: Item,
         args: {
@@ -208,9 +314,10 @@ const Mutation = new GraphQLObjectType({
           calories: { type: GraphQLString },
           protein: { type: GraphQLString },
           sugar: { type: GraphQLString },
+          fat: { type: GraphQLString },
           carbohydrates: { type: GraphQLString },
         },
-        resolve: (_, args) => {
+        resolve: (root, args, context) => {
           return db.models.item.create({
             name: args.name,
             barcode: args.barcode,
@@ -227,44 +334,35 @@ const Mutation = new GraphQLObjectType({
           });
         }
       },
-      signIn: {
-        type: User,
+      addFoodEntry: {
+        type: FoodEntry,
         args: {
-          email: { type: new GraphQLNonNull(GraphQLString) },
-          password: { type: new GraphQLNonNull(GraphQLString) },
+          userId: { type: new GraphQLNonNull(GraphQLInt) },
+          itemId: { type: new GraphQLNonNull(GraphQLInt) },
+          servingSize: { type: GraphQLString },
+          dayCreated: { type: GraphQLString },
+          createdAt: { type: GraphQLString },
+          updatedAt: { type: GraphQLString },
         },
-        resolve: async (root, args, { secrets }) => {
-          const user = await db.models.user.findOne({ where: { email: args.email.toLowerCase() } });
-          if (!user) throw new Error('Email not found');
-
-          const validPassword = await bcrypt.compare(args.password, user.password);
-          if (!validPassword) throw new Error('Incorrect password');
-
-          // Generate the jwt and add it to the user document being returned.
-          // user.jwt = jwt.sign({ _id: user._id }, secrets.JWT_SECRET);
-          return user;
-        },
-      },
-      signUp: {
-        type: User,
-        args: {
-          email: { type: new GraphQLNonNull(GraphQLString) },
-          password: { type: new GraphQLNonNull(GraphQLString) },
-          firstName: { type: new GraphQLNonNull(GraphQLString) },
-          lastName: { type: new GraphQLNonNull(GraphQLString) },
-        },
-        resolve: async (root, args) => {
-          const existingUser = await db.models.user.findOne({ where: { email: args.email } });
-          if (existingUser) throw new Error('Email already in used');
-          const hash = await bcrypt.hash(args.password, 10);
-          return db.models.user.create({
-            email: args.email.toLowerCase(),
-            password: hash,
-            firstName: args.firstName,
-            lastName: args.lastName,
+        resolve: async (root, args, context) => {
+          // get passed in user
+          const user = await db.models.user.findOne({ where: { id: args.userId } });
+          if (!user) throw new Error('User not found, how are you here?');
+          // then
+          const today = new Date();
+          const date = `${today.getFullYear()}-${(today.getMonth() + 1)}-${today.getDate()}`;
+          console.log('date', date);
+          // return foodEntry with passed in userId and foodId association
+          return user.createFoodEntry({
+            itemId: args.itemId,
+            servingSize: args.servingSize || '1',
+            dayCreated: date,
+          }).catch(err => {
+            console.log('err creating footEntry:', err);
           });
-        },
+        }
       },
+      // ...
     }
   }
 });

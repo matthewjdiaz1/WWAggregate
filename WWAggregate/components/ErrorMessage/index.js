@@ -5,6 +5,7 @@ import styles from './styles';
 
 const ErrorMessage = (props) => {
   const [error, setErr] = useState(props.error);
+  console.log(props);
   return (
     <>
       {error ? (

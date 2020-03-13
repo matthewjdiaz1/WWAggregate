@@ -8,7 +8,7 @@ import ScanNutritionScreen from '../screens/ScanNutritionScreen';
 import DisplayPic from '../components/DisplayPic';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
-import HomeScreen from '../screens/HomeScreen';
+import Dashboard from '../screens/Dashboard';
 
 const AuthStack = createStackNavigator(
   {
@@ -21,7 +21,7 @@ const AuthStack = createStackNavigator(
 );
 const HomeStack = createStackNavigator(
   {
-    Home: HomeScreen,
+    Home: Dashboard,
   },
   {
     defaultNavigationOptions: { headerShown: false }
@@ -29,11 +29,11 @@ const HomeStack = createStackNavigator(
 );
 const ScanBarcodeStack = createStackNavigator(
   {
-    ScanBarcode: ScanBarcodeScreen,
-    ItemNotFound: ItemNotFoundScreen,
+    // ScanBarcode: ScanBarcodeScreen,
+    // ItemNotFound: ItemNotFoundScreen,
     ScanNutrition: ScanNutritionScreen,
-    DisplayItem: DisplayItemScreen,
-    DisplayPic: DisplayPic,
+    // DisplayItem: DisplayItemScreen,
+    // DisplayPic: DisplayPic,
   },
   {
     defaultNavigationOptions: { headerShown: false }
@@ -49,7 +49,8 @@ const AppContainer = createAppContainer(
       ScanBarcode: ScanBarcodeStack,
     },
     {
-      initialRouteName: 'Auth',
+      // initialRouteName: 'ScanBarcode',
+      initialRouteName: 'App',
     },
   )
 );

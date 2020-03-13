@@ -32,20 +32,20 @@ const SignInScreen = ({ navigation }) => {
         email,
         password,
       }
-    }).then(user => {
-      if (user) {
-        navigation.navigate('Home', { user: user.user });
-      } else {
-        console.log('no user found');
-      }
-    });
+    }).then(user => navigation.navigate('Home', { user: user.data.signIn }))
+      .catch(err => {
+        // throw new ErrorMessage(err);
+        // console.log('Error from SignInScree.js, no user found?');
+        // console.log(JSON.stringify(err));
+      });
     setPassword('');
   }
 
   if (loading) return <LoadingIndicator />
   return (
     <View style={styles.container}>
-      <ErrorMessage error={error} />
+      {/* TODO - SANITIZE ERROR MESSAGE FROM HERE */}
+      {/* <ErrorMessage error={error} /> */}
       <Text style={styles.header}>Sign in.</Text>
       <View style={styles.inputContainer}>
         <Text style={styles.inputText}>Email</Text>
@@ -68,9 +68,7 @@ const SignInScreen = ({ navigation }) => {
         <Text style={[styles.text, { color: 'red' }]} onPress={() => navigation.navigate('SignUp')}> here</Text>
         .
       </Text>
-      {/* <View style={styles.buttonContainer}> */}
       <Button onPress={handleSignIn} label="Sign In" cta />
-      {/* </View> */}
     </View >
   );
 }
