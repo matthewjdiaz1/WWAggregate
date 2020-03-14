@@ -44,7 +44,10 @@ const Dashboard = ({ navigation }) => {
     carbohydrates: [],
     fat: [],
   });
-  const [cals, setCals] = useState(HARDCODED_DATA.calories);
+  const [caloriesEaten, setCaloriesEaten] = useState(HARDCODED_DATA.calories);
+  const [proteinEaten, setProteinEaten] = useState(HARDCODED_DATA.protein);
+  const [carbohydratesEaten, setCarbohydratesEaten] = useState(HARDCODED_DATA.carbohydrates);
+  const [fatEaten, setFatEaten] = useState(HARDCODED_DATA.fat);
   const [today, setToday] = useState(`${new Date().getFullYear()}-${(new Date().getMonth() + 1)}-${new Date().getDate()}`);
 
   const { loading, error, data } = useQuery(GET_FOOD_ENTRIES, {
@@ -55,9 +58,9 @@ const Dashboard = ({ navigation }) => {
 
   const getMacros = (nutrition) => {
     macros.calories.push(nutrition.calories);
+    macros.protein.push(nutrition.protein);
     macros.carbohydrates.push(nutrition.carbohydrates);
     macros.fat.push(nutrition.fat);
-    macros.protein.push(nutrition.protein);
     setMacros(macros);
     console.log('macros -- ', macros);
     // console.log('newMacros -- ', newMacros);
@@ -71,25 +74,35 @@ const Dashboard = ({ navigation }) => {
     // console.log('rerender macros', macros);
     console.log(goals.calories);
     console.log(macros.calories);
-    let newCals = 0;
-    macros.calories.forEach(entry => newCals += Number(entry));
-    console.log(newCals);
-    setCals(goals.calories - newCals);
+    let newCalories = 0;
+    let newProtein = 0;
+    let newCarbohydrates = 0;
+    let newFat = 0;
+    macros.calories.forEach(entry => newCalories += Number(entry));
+    macros.protein.forEach(entry => newProtein += Number(entry));
+    macros.carbohydrates.forEach(entry => newCarbohydrates += Number(entry));
+    macros.fat.forEach(entry => newFat += Number(entry));
+    console.log('new cals', newCalories);
+    setCaloriesEaten(goals.calories - newCalories);
+    setProteinEaten(goals.protein - newProtein);
+    setCarbohydratesEaten(goals.carbohydrates - newCarbohydrates);
+    setFatEaten(goals.fat - newFat);
+    console.log('prot', proteinEaten);
   };
 
   if (loading) return <LoadingIndicator />;
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>{cals}</Text>
+      <Text style={styles.header}>{caloriesEaten}</Text>
       <Text style={styles.headerText}>Calories Remaining</Text>
       <View style={styles.macroContainer}>
-        <Text style={styles.macroText}>protein: {goals.protein}</Text>
-        <Text style={styles.macroText}>carbs: {goals.carbohydrates}</Text>
-        <Text style={styles.macroText}>fat: {goals.fat}</Text>
+        <Text style={styles.macroText}>Protein {goals.protein - proteinEaten}/{goals.protein}</Text>
+        <Text style={styles.macroText}>carbs: {goals.carbohydrates - carbohydratesEaten}/{goals.carbohydrates}</Text>
+        <Text style={styles.macroText}>fat: {goals.fat - fatEaten}/{goals.fat}</Text>
       </View>
       <View style={styles.mealsHeaderContainer}>
         <Text style={styles.mealsHeader}>Meals</Text>
-        <Text style={styles.mealsCals}>800</Text>
+        <Text style={styles.mealsCals}>{goals.calories - caloriesEaten}</Text>
       </View>
       <ScrollView>
         {!data.foodEntries[0] ? (
