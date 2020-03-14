@@ -39,12 +39,12 @@ const Dashboard = ({ navigation }) => {
   const [userId, setUserId] = useState(AUTH_DATA.userId);
   const [goals, setGoals] = useState(HARDCODED_DATA);
   const [macros, setMacros] = useState({
-    calories: 0,
-    protein: 0,
-    carbohydrates: 0,
-    fat: 0,
+    calories: [],
+    protein: [],
+    carbohydrates: [],
+    fat: [],
   });
-  const [cals, setCals] = useState(0);
+  const [cals, setCals] = useState(HARDCODED_DATA.calories);
   const [today, setToday] = useState(`${new Date().getFullYear()}-${(new Date().getMonth() + 1)}-${new Date().getDate()}`);
 
   const { loading, error, data } = useQuery(GET_FOOD_ENTRIES, {
@@ -54,28 +54,38 @@ const Dashboard = ({ navigation }) => {
   useEffect(() => { }, []);
 
   const getMacros = (nutrition) => {
-    console.log('macros - ', macros);
-    console.log('newMacros - ', newMacros);
-    const newMacros = JSON.parse(JSON.stringify(macros));
-    newMacros.calories += Number(nutrition.calories);
-    newMacros.carbohydrates += Number(nutrition.carbohydrates);
-    newMacros.fat += Number(nutrition.fat);
-    newMacros.protein += Number(nutrition.protein);
+    macros.calories.push(nutrition.calories);
+    macros.carbohydrates.push(nutrition.carbohydrates);
+    macros.fat.push(nutrition.fat);
+    macros.protein.push(nutrition.protein);
+    setMacros(macros);
     console.log('macros -- ', macros);
-    console.log('newMacros -- ', newMacros);
-    // setMacros(newMacros);
-    // setCals(macros.calories);
+    // console.log('newMacros -- ', newMacros);
+
+    // count data.foodEntries[0] entries, if === calorie.length setmacros, nice
+    console.log(data.foodEntries.length);
+    console.log(macros.calories.length);
+    if (data.foodEntries.length === macros.calories.length) calcMacros();
+  };
+  const calcMacros = () => {
+    // console.log('rerender macros', macros);
+    console.log(goals.calories);
+    console.log(macros.calories);
+    let newCals = 0;
+    macros.calories.forEach(entry => newCals += Number(entry));
+    console.log(newCals);
+    setCals(goals.calories - newCals);
   };
 
   if (loading) return <LoadingIndicator />;
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>{HARDCODED_DATA.calories - macros.calories}</Text>
+      <Text style={styles.header}>{cals}</Text>
       <Text style={styles.headerText}>Calories Remaining</Text>
       <View style={styles.macroContainer}>
-        <Text style={styles.macroText}>protein: {HARDCODED_DATA.protein}</Text>
-        <Text style={styles.macroText}>carbs: {HARDCODED_DATA.carbohydrates}</Text>
-        <Text style={styles.macroText}>fat: {HARDCODED_DATA.fat}</Text>
+        <Text style={styles.macroText}>protein: {goals.protein}</Text>
+        <Text style={styles.macroText}>carbs: {goals.carbohydrates}</Text>
+        <Text style={styles.macroText}>fat: {goals.fat}</Text>
       </View>
       <View style={styles.mealsHeaderContainer}>
         <Text style={styles.mealsHeader}>Meals</Text>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text } from 'react-native';
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
@@ -20,14 +20,27 @@ query item($itemId: Int){
 }`;
 
 const Meal = (props) => {
-  const { loading, error, data } = useQuery(GET_ITEM_NUTRITION, {
+  const { loading, data, error } = useQuery(GET_ITEM_NUTRITION, {
     variables: { itemId: props.data.itemId },
   });
+
+  useEffect(() => {
+    const onCompleted = (data) => { props.getMacros(data.nutrition)/* magic */ };
+    const onError = (error) => { console.log('error', error)/* magic */ };
+    if (onCompleted || onError) {
+      if (onCompleted && !loading && !error) {
+        onCompleted(data);
+      } else if (onError && !loading && error) {
+        onError(error);
+      }
+    }
+  }, [loading, data, error]);
+
 
   if (loading) return <View />;
   // if (loading) return <LoadingIndicator />;
   if (error) return <View><Text>{error.message}</Text></View>;
-  if (!loading && !error) props.getMacros(data.nutrition);
+  // if (!loading && !error) props.getMacros(data.nutrition);
 
   return (
     <View style={styles.container}>
