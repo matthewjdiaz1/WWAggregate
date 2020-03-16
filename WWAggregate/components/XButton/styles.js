@@ -6,5 +6,7 @@ export default {
     right: "8%",
     zIndex: 100,
   },
-  // TODO xbuttonhover
+  buttonTouchableOpacity: {
+    padding: 20,
+  }
 };
