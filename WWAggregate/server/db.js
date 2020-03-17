@@ -31,18 +31,19 @@ const Item = Conn.define('item', {
   updatedAt: { type: sequelize.DATE },
 });
 const Nutrition = Conn.define('nutrition', {
-  calories: { type: sequelize.STRING },
-  protein: { type: sequelize.STRING },
-  carbohydrates: { type: sequelize.STRING },
-  fat: { type: sequelize.STRING },
-  sugar: { type: sequelize.STRING },
+  calories: { type: sequelize.INTEGER },
+  protein: { type: sequelize.INTEGER },
+  carbohydrates: { type: sequelize.INTEGER },
+  fat: { type: sequelize.INTEGER },
+  sugar: { type: sequelize.INTEGER },
   createdAt: { type: sequelize.DATE },
   updatedAt: { type: sequelize.DATE },
 });
 const FoodEntry = Conn.define('foodEntry', {
   userId: { type: sequelize.INTEGER },
   itemId: { type: sequelize.INTEGER },
-  servingSize: { type: sequelize.STRING }, // TODO - investigate FLOAT here
+  servingSize: { type: sequelize.INTEGER }, // TODO - investigate FLOAT here
+  servingUnit: { type: sequelize.STRING },
   dayCreated: { type: sequelize.STRING },
   createdAt: { type: sequelize.DATE },
   updatedAt: { type: sequelize.DATE },
