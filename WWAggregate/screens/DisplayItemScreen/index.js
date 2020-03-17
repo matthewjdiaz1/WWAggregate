@@ -10,8 +10,12 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 
 import styles from './styles';
 
+const AUTH_DATA = {
+  userId: 420,
+};
+
 const GET_ITEM = gql`
-query Barcode($barcode: String!){
+query Barcode($barcode: String!) {
 	items(barcode: $barcode) {
 	  id
     name
@@ -19,7 +23,7 @@ query Barcode($barcode: String!){
     barcodeType
     nutrition {
       calories
-      sugar
+      fat
       protein
       carbohydrates
     }
@@ -27,24 +31,32 @@ query Barcode($barcode: String!){
 }`;
 
 const ADD_ITEM = gql`
-mutation AddItem($name: String!, $barcode: String!, $barcodeType: String!, $calories: String!, $sugar: String!, $protein: String!, $carbohydrates: String!) {
-  addItem(name: $name, barcode: $barcode, barcodeType: $barcodeType, calories: $calories, sugar: $sugar, protein: $protein, carbohydrates: $carbohydrates) {
+mutation AddItem($name: String!, $barcode: String!, $barcodeType: String!, $calories: Int!, $protein: Int!, $carbohydrates: Int!, $fat: Int!) {
+  addItem(name: $name, barcode: $barcode, barcodeType: $barcodeType, calories: $calories, protein: $protein, carbohydrates: $carbohydrates, fat: $fat) {
     id
-    name
-    barcode
-    barcodeType
+  }
+}`;
+
+const ADD_FOOD_ENTRY = gql`
+mutation AddFoodEntry($userId: Int!, $itemId: Int!, $servingSize: Int, $servingUnit: String) {
+  addFoodEntry(userId: $userId, itemId: $itemId, servingSize: $servingSize, servingUnit: $servingUnit) {
+    id
   }
 }`;
 
 const DisplayItemScreen = ({ navigation }) => {
   // query db by item barcode
+  const [userId, setUserId] = useState(AUTH_DATA.userId);
   const [name, setName] = useState('');
+  const [barcode, setBarcode] = useState(navigation.state.params.barcode || "none");
+  const [barcodeType, setBarcodeType] = useState(navigation.state.params.barcodeType || "none");
   const [calories, setCalories] = useState('');
   const [protein, setProtein] = useState('');
-  const [sugar, setSugar] = useState('');
+  const [fat, setFat] = useState('');
   const [carbohydrates, setCarbohydrates] = useState('');
-  const [barcode, setBarcode] = useState(navigation.state.params.barcode);
-  const [barcodeType, setBarcodeType] = useState(navigation.state.params.barcodeType);
+  const [sugar, setSugar] = useState('');
+  const [servingSize, setServingSize] = useState(1);
+  const [servingUnit, setServingUnit] = useState('g');
 
   // query
   const { loading, error, data } = useQuery(GET_ITEM, {
@@ -52,41 +64,60 @@ const DisplayItemScreen = ({ navigation }) => {
   });
   if (!loading) {
     // TODO - investigate doubled up due to "optimistic response" https://www.apollographql.com/docs/react/performance/optimistic-ui/
-    // console.log('barcode:    ', barcode);
-    // console.log('barcodeType:', barcodeType);
-    // console.log('query data: ', data);
   }
 
   // mutation 
   // add new item w/ name, barcode and barcodeType
   // add nutrition
   const [addItem] = useMutation(ADD_ITEM,
-    {
-      update(cache, { data: { addItem } }) {
-        const { item } = cache.readQuery({ query: GET_ITEM });
-        cache.writeQuery({
-          query: GET_ITEM,
-          data: { items: items.concat([addItem]) },
-        });
-      }
-    }
+    // {
+    //   update(cache, { data: { addItem } }) {
+    //     const { item } = cache.readQuery({ query: GET_ITEM });
+    //     cache.writeQuery({
+    //       query: GET_ITEM,
+    //       data: { items: items.concat([addItem]) },
+    //     });
+    //   }
+    // }
   );
+
+  const [addFoodEntry] = useMutation(ADD_FOOD_ENTRY);
 
   // // if item is in db, return item info (id) and query/load nutrition info from join table
   const handleOnPress = () => {
+    console.log('variables:', {
+      name,
+      barcode,
+      barcodeType,
+      calories: Number(calories),
+      protein: Number(protein),
+      fat: Number(fat),
+      carbohydrates: Number(carbohydrates),
+    });
     addItem({
       variables: {
         name,
         barcode,
         barcodeType,
-        calories,
-        protein,
-        sugar,
-        carbohydrates,
+        calories: Number(calories),
+        protein: Number(protein),
+        fat: Number(fat),
+        carbohydrates: Number(carbohydrates),
       }
+    }).then(({ data: { addItem: { id } } }) => {
+      // addFoodEntry
+      console.log('id', id);
+      console.log('data', data);
+      addFoodEntry({
+        variables: {
+          userId: AUTH_DATA.userId,
+          itemId: id,
+          servingSize,
+          servingUnit,
+        }
+      })
     });
-    // console.log('added item:', mutationData.data);
-    navigation.navigate('ScanBarcode');
+    navigation.navigate('Home');
   }
   // // if item isn't in db, navigate to ItemNotFoundScreen
 
@@ -98,21 +129,27 @@ const DisplayItemScreen = ({ navigation }) => {
   // console.log('calories:', calories);
   return (
     <>
-      {data.items.length > 0 ? (
+      {data.items[0] ? (
         <View style={styles.container}>
-          <Text style={styles.header}>{data.items[0].name}</Text>
-          <Text style={styles.text}>id: {data.items[0].id}</Text>
+          <Text style={styles.header}>add meal?</Text>
+          {/* <Text style={styles.text}>id: {data.items[0].id}</Text> */}
           {/* <Text style={styles.text}>name: </Text> */}
-          <Text style={styles.text}>barcode: {data.items[0].barcode}</Text>
-          <Text style={styles.text}>barcode type: {data.items[0].barcodeType}</Text>
-          <Text style={styles.text}>calories: {data.items[0].nutrition.calories}</Text>
-          <Text style={styles.text}>sugar: {data.items[0].nutrition.sugar}</Text>
-          <Text style={styles.text}>protein: {data.items[0].nutrition.protein}</Text>
-          <Text style={styles.text}>carbohydrates: {data.items[0].nutrition.carbohydrates}</Text>
+          {/* <Text style={styles.text}>barcode: {data.items[0].barcode}</Text> */}
+          {/* <Text style={styles.text}>barcode type: {data.items[0].barcodeType}</Text> */}
+          <Text style={styles.text}>{data.items[0].name}</Text>
+          <Text style={styles.text}>calories: {data.items[0].nutrition.calories || 0}</Text>
+          <Text style={styles.text}>fat: {data.items[0].nutrition.fat || 0}</Text>
+          <Text style={styles.text}>protein: {data.items[0].nutrition.protein || 0}</Text>
+          <Text style={styles.text}>carbohydrates: {data.items[0].nutrition.carbohydrates || 0}</Text>
+          <Text style={styles.inputLabel}>serving size</Text><TextInput
+            style={styles.input}
+            placeholder="90"
+            onChangeText={(text) => setServingSize(text)}
+            value={servingSize} />
           <XButton onPress={() => navigation.navigate('ScanBarcode')}></XButton>
           <View style={styles.buttonContainer}>
             <Button label={'Back'} onPress={() => navigation.navigate('ScanBarcode')} />
-            <Button label={'Button 1'} onPress={() => navigation.navigate('next screen')} cta />
+            <Button onPress={() => handleOnPress()} label="Add Item" cta />
           </View>
         </View>
       ) : (
@@ -126,34 +163,46 @@ const DisplayItemScreen = ({ navigation }) => {
                 style={styles.input}
                 placeholder="Organic Applesauce"
                 onChangeText={(text) => setName(text)}
+                autoCapitalize={'words'}
                 value={name} />
               <Text style={styles.text}></Text>
               <Text style={styles.inputLabel}>Calories</Text>
               <TextInput
+                enablesReturnKeyAutomatically={true}
                 style={styles.input}
-                placeholder="15"
+                placeholder="0"
+                // keyboardType={'number-pad'}
+                returnKeyType={'next'}
                 onChangeText={(text) => setCalories(text)}
                 value={calories} />
               <Text style={styles.inputLabel}>Protein</Text>
               <TextInput
+                enablesReturnKeyAutomatically={true}
                 style={styles.input}
-                placeholder="15"
+                placeholder="0"
+                // keyboardType={'number-pad'}
+                returnKeyType={'next'}
                 onChangeText={(text) => setProtein(text)}
                 value={protein} />
-              <Text style={styles.inputLabel}>Sugar</Text>
+              <Text style={styles.inputLabel}>Fat</Text>
               <TextInput
+                enablesReturnKeyAutomatically={true}
                 style={styles.input}
-                placeholder="15"
-                onChangeText={(text) => setSugar(text)}
-                value={sugar} />
+                placeholder="0"
+                // keyboardType={'numeric'}
+                returnKeyType={'next'}
+                onChangeText={(text) => setFat(text)}
+                value={fat} />
               <Text style={styles.inputLabel}>Carbohydrates</Text>
               <TextInput
+                enablesReturnKeyAutomatically={true}
                 style={styles.input}
-                placeholder="15"
+                placeholder="0"
+                // keyboardType={'numeric'}
+                returnKeyType={'next'}
                 onChangeText={(text) => setCarbohydrates(text)}
                 value={carbohydrates} />
             </View>
-
             <View style={styles.buttonContainer}>
               <Button onPress={() => navigation.navigate('ScanBarcode')} label="Back" />
               <Button onPress={() => handleOnPress()} label="Add Item" cta />

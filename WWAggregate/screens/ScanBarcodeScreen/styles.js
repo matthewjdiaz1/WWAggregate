@@ -19,4 +19,8 @@ export default {
     zIndex: 10,
     color: 'rgb(111, 218, 242)',
   },
+  // buttonTouchableOpacity: {
+  //   backgroundColor: "red",
+  //   padding: 20,
+  // },
 };

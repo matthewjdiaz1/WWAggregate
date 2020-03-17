@@ -25,8 +25,8 @@ const Meal = (props) => {
   });
 
   useEffect(() => {
-    const onCompleted = (data) => { props.getMacros(data.nutrition)/* magic */ };
-    const onError = (error) => { console.log('error', error)/* magic */ };
+    const onCompleted = (data) => { props.getMacros(data.nutrition) };
+    const onError = (error) => { console.log(`meal useEffect error:`, error.message) };
     if (onCompleted || onError) {
       if (onCompleted && !loading && !error) {
         onCompleted(data);
@@ -38,14 +38,21 @@ const Meal = (props) => {
 
 
   if (loading) return <View />;
+  // if (loading) { props.key !== 0 ? <View></View> : <LoadingIndicator /> }
   // if (loading) return <LoadingIndicator />;
   if (error) return <View><Text>{error.message}</Text></View>;
-  // if (!loading && !error) props.getMacros(data.nutrition);
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>{data.item.name}</Text>
-      <Text style={styles.text}>{data.nutrition.calories}</Text>
+    <View>
+      <View style={styles.container}>
+        <Text style={styles.text}>{data.item.name}</Text>
+        <Text style={styles.text}>{data.nutrition.calories}</Text>
+      </View>
+      <View style={styles.macrosContainer}>
+        <Text style={styles.macros}>protein {data.nutrition.protein || 0}g</Text>
+        <Text style={styles.macros}>fat {data.nutrition.fat || 0}g</Text>
+        <Text style={styles.macros}>carbs {data.nutrition.carbohydrates || 0}g</Text>
+      </View>
     </View>
   );
 };

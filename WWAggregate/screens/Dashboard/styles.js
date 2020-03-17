@@ -5,6 +5,7 @@ export default {
     position: "relative",
     paddingHorizontal: 20,
     backgroundColor: "#E5E5E5",
+    // backgroundColor: "white",
     color: '#000000',
     fontWeight: '500',
   },
@@ -32,16 +33,19 @@ export default {
   },
   macroContainer: {
     flexDirection: 'row',
-    justifyContent: 'center',
-    // paddingTop: 68,
-    // paddingbottom: 68,
-    padding: 68,
+    alignSelf: 'center',
+    justifyContent: 'space-around',
+    marginVertical: 30,
+    width: 273,
+    // borderStyle: 'solid',
+    // borderWidth: 1,
+    // borderColor: '#bfd8e3',
   },
   mealsHeaderContainer: {
-    borderStyle: 'solid',
     flexDirection: 'row',
     justifyContent: 'space-between',
     paddingVertical: 6,
+    borderStyle: 'solid',
     borderBottomWidth: 1,
     borderBottomColor: '#bfd8e3',
     // borderBottomColor: '#E4E9F4',
@@ -68,9 +72,8 @@ export default {
     marginTop: 20,
     marginBottom: 60,
   },
-  footerFader: {
-    marginBottom: 60,
-    alignItems: 'center',
-    backgroundColor: 'linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 100%)',
-  }
+  footerButtonTouchable: {
+    backgroundColor: "clear",
+    padding: 20,
+  },
 };

@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView } from 'react-native';
+import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { useQuery } from "@apollo/react-hooks";
 import gql from "graphql-tag";
 
+import MacroArc from '../../components/MacroArc';
 import Meal from '../../components/Meal';
 import LoadingIndicator from '../../components/LoadingIndicator';
 import SettingsSVG from '../../components/SVGs/settings';
 import AddMealSVG from '../../components/SVGs/addMeal';
 import ProfileSVG from '../../components/SVGs/profile';
+
 import styles from './styles';
 
 const HARDCODED_DATA = {
   // calories: 2397,
-  calories: 2400,
+  calories: 2387,
   protein: 150,
   carbohydrates: 330,
   fat: 53,
@@ -54,40 +56,33 @@ const Dashboard = ({ navigation }) => {
     variables: { userId, dayCreated: today },
   });
 
-  useEffect(() => { }, []);
-
   const getMacros = (nutrition) => {
     macros.calories.push(nutrition.calories);
     macros.protein.push(nutrition.protein);
     macros.carbohydrates.push(nutrition.carbohydrates);
     macros.fat.push(nutrition.fat);
     setMacros(macros);
-    console.log('macros -- ', macros);
-    // console.log('newMacros -- ', newMacros);
 
-    // count data.foodEntries[0] entries, if === calorie.length setmacros, nice
-    console.log(data.foodEntries.length);
-    console.log(macros.calories.length);
+    // once last entry is pushed, calculate macros
     if (data.foodEntries.length === macros.calories.length) calcMacros();
   };
+
   const calcMacros = () => {
-    // console.log('rerender macros', macros);
-    console.log(goals.calories);
-    console.log(macros.calories);
     let newCalories = 0;
-    let newProtein = 0;
-    let newCarbohydrates = 0;
-    let newFat = 0;
     macros.calories.forEach(entry => newCalories += Number(entry));
-    macros.protein.forEach(entry => newProtein += Number(entry));
-    macros.carbohydrates.forEach(entry => newCarbohydrates += Number(entry));
-    macros.fat.forEach(entry => newFat += Number(entry));
-    console.log('new cals', newCalories);
     setCaloriesEaten(goals.calories - newCalories);
+
+    let newProtein = 0;
+    macros.protein.forEach(entry => newProtein += Number(entry));
     setProteinEaten(goals.protein - newProtein);
+
+    let newCarbohydrates = 0;
+    macros.carbohydrates.forEach(entry => newCarbohydrates += Number(entry));
     setCarbohydratesEaten(goals.carbohydrates - newCarbohydrates);
+
+    let newFat = 0;
+    macros.fat.forEach(entry => newFat += Number(entry));
     setFatEaten(goals.fat - newFat);
-    console.log('prot', proteinEaten);
   };
 
   if (loading) return <LoadingIndicator />;
@@ -96,13 +91,28 @@ const Dashboard = ({ navigation }) => {
       <Text style={styles.header}>{caloriesEaten}</Text>
       <Text style={styles.headerText}>Calories Remaining</Text>
       <View style={styles.macroContainer}>
-        <Text style={styles.macroText}>Protein {goals.protein - proteinEaten}/{goals.protein}</Text>
-        <Text style={styles.macroText}>carbs: {goals.carbohydrates - carbohydratesEaten}/{goals.carbohydrates}</Text>
-        <Text style={styles.macroText}>fat: {goals.fat - fatEaten}/{goals.fat}</Text>
+        <MacroArc macros={{
+          text: 'Protein',
+          goal: goals.protein,
+          actual: goals.protein - proteinEaten,
+          color: '#cb4da2',
+        }} />
+        <MacroArc macros={{
+          text: 'Carbs',
+          goal: goals.carbohydrates,
+          actual: goals.carbohydrates - carbohydratesEaten,
+          color: '#7147d4',
+        }} />
+        <MacroArc macros={{
+          text: 'Fat',
+          goal: goals.fat,
+          actual: goals.fat - fatEaten,
+          color: '#89d7ef',
+        }} />
       </View>
       <View style={styles.mealsHeaderContainer}>
         <Text style={styles.mealsHeader}>Meals</Text>
-        <Text style={styles.mealsCals}>{goals.calories - caloriesEaten}</Text>
+        <Text style={styles.mealsCals}>Cals: {goals.calories - caloriesEaten}/{goals.calories}</Text>
       </View>
       <ScrollView>
         {!data.foodEntries[0] ? (
@@ -116,9 +126,15 @@ const Dashboard = ({ navigation }) => {
       </ScrollView>
       {/* <View style={styles.footerFader}><Text>test</Text></View> */}
       <View style={styles.footerContainer}>
-        <ProfileSVG />
-        <AddMealSVG />
-        <SettingsSVG />
+        <TouchableOpacity style={styles.footerButtonTouchable} onPress={() => { console.log('goals', goals) }}>
+          <ProfileSVG />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.footerButtonTouchable} onPress={() => { navigation.navigate('Scan') }}>
+          <AddMealSVG />
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.footerButtonTouchable} onPress={() => { console.log('does not work') }}>
+          <SettingsSVG />
+        </TouchableOpacity>
       </View>
     </View>
   );
