@@ -1,15 +1,15 @@
 import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import { createStackNavigator } from 'react-navigation-stack';
 
-import ScanBarcodeScreen from '../screens/ScanBarcodeScreen';
-import DisplayItemScreen from '../screens/DisplayItemScreen';
-import ItemNotFoundScreen from '../screens/ItemNotFoundScreen';
-import ScanNutritionScreen from '../screens/ScanNutritionScreen';
-import DisplayPic from '../components/DisplayPic';
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
 import Dashboard from '../screens/Dashboard';
+import ScanBarcodeScreen from '../screens/ScanBarcodeScreen';
+import AddFoodScreen from '../screens/AddFoodScreen';
+import ScanNutritionScreen from '../screens/ScanNutritionScreen';
 
+import DisplayItemScreen from '../screens/DisplayItemScreen';
+import DisplayPic from '../components/DisplayPic';
 const AuthStack = createStackNavigator(
   {
     SignIn: SignInScreen,
@@ -21,19 +21,18 @@ const AuthStack = createStackNavigator(
 );
 const HomeStack = createStackNavigator(
   {
-    Home: Dashboard,
+    Dashboard,
   },
   {
     defaultNavigationOptions: { headerShown: false }
   },
 );
-const ScanBarcodeStack = createStackNavigator(
+const AddFoodStack = createStackNavigator(
   {
-    // ScanBarcode: ScanBarcodeScreen,
-    // ItemNotFound: ItemNotFoundScreen,
+    AddFood: AddFoodScreen,
+    ScanBarcode: ScanBarcodeScreen,
     ScanNutrition: ScanNutritionScreen,
-    // DisplayItem: DisplayItemScreen,
-    // DisplayPic: DisplayPic,
+    DisplayItem: DisplayItemScreen,
   },
   {
     defaultNavigationOptions: { headerShown: false }
@@ -45,12 +44,12 @@ const AppContainer = createAppContainer(
   createSwitchNavigator(
     {
       Auth: AuthStack,
-      App: HomeStack,
-      ScanBarcode: ScanBarcodeStack,
+      Home: HomeStack,
+      Add: AddFoodStack,
     },
     {
-      // initialRouteName: 'ScanBarcode',
-      initialRouteName: 'App',
+      // initialRouteName: 'Auth',
+      initialRouteName: 'Home',
     },
   )
 );

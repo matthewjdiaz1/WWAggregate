@@ -55,7 +55,7 @@ const DisplayItemScreen = ({ navigation }) => {
   const [fat, setFat] = useState('');
   const [carbohydrates, setCarbohydrates] = useState('');
   const [sugar, setSugar] = useState('');
-  const [servingSize, setServingSize] = useState(1);
+  const [servingSize, setServingSize] = useState('1');
   const [servingUnit, setServingUnit] = useState('g');
 
   // query
@@ -63,12 +63,9 @@ const DisplayItemScreen = ({ navigation }) => {
     variables: { barcode },
   });
   if (!loading) {
-    // TODO - investigate doubled up due to "optimistic response" https://www.apollographql.com/docs/react/performance/optimistic-ui/
+    // TODO - investigate loading doubled up due to "optimistic response" https://www.apollographql.com/docs/react/performance/optimistic-ui/
   }
 
-  // mutation 
-  // add new item w/ name, barcode and barcodeType
-  // add nutrition
   const [addItem] = useMutation(ADD_ITEM,
     // {
     //   update(cache, { data: { addItem } }) {
@@ -80,8 +77,8 @@ const DisplayItemScreen = ({ navigation }) => {
     //   }
     // }
   );
-
   const [addFoodEntry] = useMutation(ADD_FOOD_ENTRY);
+
 
   // // if item is in db, return item info (id) and query/load nutrition info from join table
   const handleOnPress = () => {
@@ -112,7 +109,7 @@ const DisplayItemScreen = ({ navigation }) => {
         variables: {
           userId: AUTH_DATA.userId,
           itemId: id,
-          servingSize,
+          servingSize: Number(servingSize),
           servingUnit,
         }
       })
@@ -123,10 +120,6 @@ const DisplayItemScreen = ({ navigation }) => {
 
   if (loading) return <LoadingIndicator />;
   if (error) return <Text style={styles.header}>Error</Text>;
-
-  // console.log('name:', name);
-  // console.log('barcode:', barcode);
-  // console.log('calories:', calories);
   return (
     <>
       {data.items[0] ? (
@@ -156,7 +149,6 @@ const DisplayItemScreen = ({ navigation }) => {
           <View style={styles.container}>
             <Text style={styles.header}>Item not found</Text>
             <Text style={styles.text}>Add a product name and nutritional info to add an item to your library.</Text>
-
             <View>
               <Text style={styles.inputLabel}>Item Name</Text>
               <TextInput
@@ -211,6 +203,6 @@ const DisplayItemScreen = ({ navigation }) => {
         )}
     </>
   );
-}
+};
 
 export default withNavigation(DisplayItemScreen);

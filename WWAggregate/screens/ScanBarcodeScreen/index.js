@@ -30,7 +30,7 @@ const ScanBarcodeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <CameraOverlay top={275} bottom={275} left={50} right={50} />
-      <XButton onPress={() => navigation.navigate('Home')} />
+      <XButton onPress={() => navigation.goBack()} />
       <Text style={styles.text}>Scan a barcode</Text>
       <BarCodeScanner
         onPress={() => props.toggle()}

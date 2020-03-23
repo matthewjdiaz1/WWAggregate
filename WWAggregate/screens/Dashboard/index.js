@@ -7,10 +7,9 @@ import gql from "graphql-tag";
 import MacroArc from '../../components/MacroArc';
 import Meal from '../../components/Meal';
 import LoadingIndicator from '../../components/LoadingIndicator';
-import SettingsSVG from '../../components/SVGs/settings';
-import AddMealSVG from '../../components/SVGs/addMeal';
-import ProfileSVG from '../../components/SVGs/profile';
-
+import SettingsSVG from '../../components/SVGs/SettingsSVG';
+import AddMealSVG from '../../components/SVGs/AddMealSVG';
+import ProfileSVG from '../../components/SVGs/ProfileSVG';
 import styles from './styles';
 
 const HARDCODED_DATA = {
@@ -62,9 +61,10 @@ const Dashboard = ({ navigation }) => {
     macros.carbohydrates.push(nutrition.carbohydrates);
     macros.fat.push(nutrition.fat);
     setMacros(macros);
+    calcMacros();
 
     // once last entry is pushed, calculate macros
-    if (data.foodEntries.length === macros.calories.length) calcMacros();
+    // if (data.foodEntries.length === macros.calories.length) calcMacros();
   };
 
   const calcMacros = () => {
@@ -126,15 +126,9 @@ const Dashboard = ({ navigation }) => {
       </ScrollView>
       {/* <View style={styles.footerFader}><Text>test</Text></View> */}
       <View style={styles.footerContainer}>
-        <TouchableOpacity style={styles.footerButtonTouchable} onPress={() => { console.log('goals', goals) }}>
-          <ProfileSVG />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.footerButtonTouchable} onPress={() => { navigation.navigate('Scan') }}>
-          <AddMealSVG />
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.footerButtonTouchable} onPress={() => { console.log('does not work') }}>
-          <SettingsSVG />
-        </TouchableOpacity>
+        <ProfileSVG onPress={() => { console.log('goals', goals) }} />
+        <AddMealSVG onPress={() => { navigation.navigate('Add') }} />
+        <SettingsSVG onPress={() => { console.log('does not work') }} />
       </View>
     </View>
   );

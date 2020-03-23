@@ -3,15 +3,25 @@ const faker = require('faker');
 const _ = require('lodash');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { RDS } = require('./config');
 
+// const Conn = new sequelize(
+//   'testitem',
+//   'carforce',
+//   '',
+//   {
+//     dialect: 'postgres',
+//     host: 'localhost',
+//   }
+// );
 const Conn = new sequelize(
-  'testitem',
-  'carforce',
-  '',
+  RDS.database,
+  RDS.user,
+  RDS.password,
   {
     dialect: 'postgres',
-    host: 'localhost',
-  }
+    host: RDS.host,
+  },
 );
 
 const User = Conn.define('user', {
@@ -42,6 +52,7 @@ const Nutrition = Conn.define('nutrition', {
 const FoodEntry = Conn.define('foodEntry', {
   userId: { type: sequelize.INTEGER },
   itemId: { type: sequelize.INTEGER },
+  itemName: { type: sequelize.STRING },
   servingSize: { type: sequelize.INTEGER }, // TODO - investigate FLOAT here
   servingUnit: { type: sequelize.STRING },
   dayCreated: { type: sequelize.STRING },
@@ -102,9 +113,9 @@ const resetDB = () => {
         id: 420,
         firstName: 'Matty',
         lastName: 'D.',
-        email: '',
+        email: 'test@test.com',
         password: hash,
-        jwt: '',
+        jwt: 'test',
       }).then(user => {
         // _.times(2, () => {
         //   user.createFoodEntry({

@@ -4,7 +4,7 @@ export default {
     flexDirection: 'column',
     position: "relative",
     paddingHorizontal: 20,
-    backgroundColor: "#E5E5E5",
+    backgroundColor: "#FFFFFF",
     color: '#000000',
   },
   header: {

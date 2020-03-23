@@ -5,7 +5,7 @@ export default {
     position: "relative",
     // height: "100%",
     paddingHorizontal: 20,
-    backgroundColor: "#E5E5E5",
+    backgroundColor: "#FFFFFF",
     color: '#000000',
   },
   header: {
@@ -34,7 +34,7 @@ export default {
     borderWidth: 1,
     borderRadius: 4,
     borderStyle: "solid",
-    borderColor: "#D2DBE2",
+    borderColor: "#D0D3DB",
     fontSize: 18,
     fontWeight: '500',
     lineHeight: 23,

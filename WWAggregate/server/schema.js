@@ -8,6 +8,7 @@ const {
 } = require('graphql');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const { Op } = require('sequelize');
 
 const db = require('./db');
 
@@ -152,6 +153,10 @@ const FoodEntry = new GraphQLObjectType({
         type: GraphQLInt,
         resolve: (foodEntry) => foodEntry.itemId,
       },
+      itemName: {
+        type: GraphQLString,
+        resolve: (foodEntry) => foodEntry.itemName,
+      },
       item: {
         type: Item,
         resolve: (foodEntry) => db.models.item.findOne({ where: { id: foodEntry.itemId } }),
@@ -252,13 +257,18 @@ const Query = new GraphQLObjectType({
           id: { type: GraphQLInt },
           userId: { type: GraphQLInt },
           itemId: { type: GraphQLInt },
+          itemName: { type: GraphQLString },
           servingSize: { type: GraphQLInt },
           servingUnit: { type: GraphQLString },
           dayCreated: { type: GraphQLString },
           createdAt: { type: GraphQLString },
           updatedAt: { type: GraphQLString },
         },
-        resolve: (root, args, context) => db.models.foodEntry.findAll({ where: args }),
+        resolve: (root, args, context) => {
+          console.log('foodEntries args:', args);
+          if (args.itemName) args.itemName = { [Op.like]: `%${args.itemName}%` };
+          return db.models.foodEntry.findAll({ where: args });
+        }
       },
       // ...
     };
@@ -350,6 +360,7 @@ const Mutation = new GraphQLObjectType({
         args: {
           userId: { type: new GraphQLNonNull(GraphQLInt) },
           itemId: { type: new GraphQLNonNull(GraphQLInt) },
+          itemName: { type: GraphQLString },
           servingSize: { type: GraphQLInt },
           servingUnit: { type: GraphQLString },
           dayCreated: { type: GraphQLString },
@@ -360,11 +371,16 @@ const Mutation = new GraphQLObjectType({
           const user = await db.models.user.findOne({ where: { id: args.userId } });
           if (!user) throw new Error('User not found, how are you here?');
 
+          const item = await db.models.item.findOne({ where: { id: args.itemId } });
+          const { name } = item;
+          if (!user) throw new Error('User not found, how are you here?');
+
           const today = new Date();
           const date = `${today.getFullYear()}-${(today.getMonth() + 1)}-${today.getDate()}`;
           // return foodEntry with passed in userId and foodId association
           return user.createFoodEntry({
             itemId: args.itemId,
+            itemName: args.itemName || name,
             servingSize: args.servingSize || 1,
             servingUnit: args.servingUnit,
             dayCreated: date,

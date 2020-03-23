@@ -20,6 +20,6 @@ export default {
   macrosContainer: {
     flexDirection: 'row',
     borderBottomWidth: 1,
-    borderBottomColor: '#bfd8e3',
+    borderBottomColor: '#D0D3DB',
   },
 };

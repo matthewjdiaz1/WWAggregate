@@ -4,7 +4,7 @@ export default {
     flexDirection: 'column',
     position: "relative",
     paddingHorizontal: 20,
-    backgroundColor: "#E5E5E5",
+    backgroundColor: "#FFFFFF",
     // backgroundColor: "white",
     color: '#000000',
     fontWeight: '500',
@@ -47,7 +47,7 @@ export default {
     paddingVertical: 6,
     borderStyle: 'solid',
     borderBottomWidth: 1,
-    borderBottomColor: '#bfd8e3',
+    borderBottomColor: '#D0D3DB',
     // borderBottomColor: '#E4E9F4',
   },
   mealsHeader: {
