@@ -9,6 +9,7 @@ import Button from '../../components/Button';
 import LoadingIndicator from '../../components/LoadingIndicator';
 
 import styles from './styles';
+import { CostExplorer } from 'aws-sdk';
 
 /**
  * TODO
@@ -123,10 +124,26 @@ const DisplayItemScreen = ({ navigation }) => {
     });
     navigation.navigate('Home');
   }
-  // if item isn't in db, navigate to ItemNotFoundScreen
+
+  const navToScanNutrition = () => {
+    let item = {
+      name,
+      barcode,
+      barcodeType,
+      calories: Number(calories),
+      protein: Number(protein),
+      fat: Number(fat),
+      carbohydrates: Number(carbohydrates),
+    }
+    console.log('item:', item);
+    navigation.navigate('ScanNutrition', { item });
+  };
 
   if (loading) return <LoadingIndicator />;
-  if (error) return <Text style={styles.header}>Error</Text>;
+  if (error) {
+    console.log('error message:'.error.message);
+    return <Text style={styles.header}>Error...</Text>
+  }
   return (
     <>
       {data.items[0] ? (
@@ -208,8 +225,7 @@ const DisplayItemScreen = ({ navigation }) => {
               </View>
             </View>
             <View style={styles.buttonContainer}>
-              {/* <Button onPress={() => handleOnPress()} label="test" /> */}
-              <Button onPress={() => handleOnPress()} label="Scan Label" cta />
+              <Button onPress={() => navToScanNutrition()} label="Scan Label" cta />
             </View>
           </View>
         )}
