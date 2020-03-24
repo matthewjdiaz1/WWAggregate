@@ -10,17 +10,14 @@ export default {
     width: '100%',
   },
   text: {
-    paddingTop: '35%',
+    position: 'absolute',
+    bottom: 219,
+    alignSelf: 'center',
     fontWeight: 'bold',
-    textAlign: 'center',
     fontSize: 36,
     fontWeight: '500',
     lineHeight: 46,
     zIndex: 10,
-    color: 'rgb(111, 218, 242)',
+    color: '#FFFFFF',
   },
-  // buttonTouchableOpacity: {
-  //   backgroundColor: "red",
-  //   padding: 20,
-  // },
 };

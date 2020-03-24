@@ -12,7 +12,7 @@
 npm install
 ```
 #### Start server
-Your IP will be displayed here.  Add it to config file in your root directory to allow graphiql queries.  (http://000.000.0.00:4000/graphiql)
+Your IP will be displayed here.  Add it to config file in your root directory to allow graphiql queries at http://<YOUR_IP_ADDRESS>:4000/graphiql
 ```
 npm run server
 ```

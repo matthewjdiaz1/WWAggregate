@@ -29,16 +29,17 @@ const ScanBarcodeScreen = ({ navigation }) => {
   if (hasPermission === false) return <Text>No access to camera</Text>;
   return (
     <View style={styles.container}>
-      <CameraOverlay top={275} bottom={275} left={50} right={50} />
+      <CameraOverlay top={277} bottom={277} left={20} right={20} />
       <XButton onPress={() => navigation.goBack()} />
-      <Text style={styles.text}>Scan a barcode</Text>
       <BarCodeScanner
         onPress={() => props.toggle()}
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-        style={styles.scannerBorder}
-      />
+        style={styles.scannerBorder} />
+      <Text style={styles.text}>Scan a barcode</Text>
     </View>
   );
 }
 
 export default withNavigation(ScanBarcodeScreen);
+
+

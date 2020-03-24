@@ -11,6 +11,16 @@ import CaretLeftSVG from '../../components/SVGs/CaretLeftSVG';
 import SearchIconSVG from '../../components/SVGs/SearchIconSVG';
 import styles from './styles';
 
+/**
+ * from here we need to find a quick, easy, and intuitive way to add item meals for today.
+ * eveytime i have a pb&j i don't want to have to scan 3 barcodes.
+ * i don't want to have to search for three items, either. (peanut butter, jelly, bread)
+ * i need some type of meal system to add previous meals i've had
+ * 
+ * perhaps when we scan a barcode, it adds it to our "pantry", or items that we ofter use(or have ever use)
+ * and maybe we can create meals or recipies from multiple items.
+ */
+
 const AUTH_DATA = {
   userId: 420,
 };
@@ -36,7 +46,7 @@ query AllEntries($userId: Int!, $itemName: String){
 }`;
 // TODO - research order by updatedAt(newest first) before render
 // https://hasura.io/learn/graphql/react-native/queries/2-create-query/
-// possibele example...
+// possible example...
 const FETCH_TODOS = gql`
 query {
   todos (
@@ -73,6 +83,7 @@ const AddFoodScreen = ({ navigation }) => {
         refetch({ userId, itemName: text });
       }, 300));
     } else {
+      console.log('empty search');
       setDebounceInterval(setTimeout(() => {
         refetch({ userId })
           .then((searchData) => console.log('empty search data', searchData));
@@ -127,7 +138,7 @@ const AddFoodScreen = ({ navigation }) => {
               <Text style={styles.itemServing}>{entry.servingSize}{entry.servingUnit}</Text>
             </View>
           )) : (
-              <View style={styles.itemContainer}>
+              <View>
                 <View style={styles.itemContainer}>
                   <LoadingIndicator text={'Loading meal history.'} />
                 </View>

@@ -10,6 +10,13 @@ import LoadingIndicator from '../../components/LoadingIndicator';
 
 import styles from './styles';
 
+/**
+ * TODO
+ * split into two screens, ItemNotFoundScreen and DisplayItemScreen.
+ * decide which screen to switch to from ScanBarcodeScreen. edit logic in handleBarCodeScanned()?
+ * 
+ * need a unit picker.  ['g', 'cups', 'oz', 'ml', ...]
+ */
 const AUTH_DATA = {
   userId: 420,
 };
@@ -67,6 +74,7 @@ const DisplayItemScreen = ({ navigation }) => {
   }
 
   const [addItem] = useMutation(ADD_ITEM,
+    // TODO - caching.  this will allow scanned items to immediately show up under meals and history without reloading the app.  
     // {
     //   update(cache, { data: { addItem } }) {
     //     const { item } = cache.readQuery({ query: GET_ITEM });
@@ -81,7 +89,7 @@ const DisplayItemScreen = ({ navigation }) => {
 
 
   // // if item is in db, return item info (id) and query/load nutrition info from join table
-  const handleOnPress = () => {
+  const handleAddItem = () => {
     console.log('variables:', {
       name,
       barcode,
@@ -101,8 +109,7 @@ const DisplayItemScreen = ({ navigation }) => {
         fat: Number(fat),
         carbohydrates: Number(carbohydrates),
       }
-    }).then(({ data: { addItem: { id } } }) => {
-      // addFoodEntry
+    }).then(({ data: { addItem: { id } } }) => { // overuse of destructuring?
       console.log('id', id);
       console.log('data', data);
       addFoodEntry({
@@ -112,11 +119,11 @@ const DisplayItemScreen = ({ navigation }) => {
           servingSize: Number(servingSize),
           servingUnit,
         }
-      })
+      });
     });
     navigation.navigate('Home');
   }
-  // // if item isn't in db, navigate to ItemNotFoundScreen
+  // if item isn't in db, navigate to ItemNotFoundScreen
 
   if (loading) return <LoadingIndicator />;
   if (error) return <Text style={styles.header}>Error</Text>;
@@ -125,10 +132,6 @@ const DisplayItemScreen = ({ navigation }) => {
       {data.items[0] ? (
         <View style={styles.container}>
           <Text style={styles.header}>add meal?</Text>
-          {/* <Text style={styles.text}>id: {data.items[0].id}</Text> */}
-          {/* <Text style={styles.text}>name: </Text> */}
-          {/* <Text style={styles.text}>barcode: {data.items[0].barcode}</Text> */}
-          {/* <Text style={styles.text}>barcode type: {data.items[0].barcodeType}</Text> */}
           <Text style={styles.text}>{data.items[0].name}</Text>
           <Text style={styles.text}>calories: {data.items[0].nutrition.calories || 0}</Text>
           <Text style={styles.text}>fat: {data.items[0].nutrition.fat || 0}</Text>
@@ -142,62 +145,71 @@ const DisplayItemScreen = ({ navigation }) => {
           <XButton onPress={() => navigation.navigate('ScanBarcode')}></XButton>
           <View style={styles.buttonContainer}>
             <Button label={'Back'} onPress={() => navigation.navigate('ScanBarcode')} />
-            <Button onPress={() => handleOnPress()} label="Add Item" cta />
+            <Button onPress={() => handleAddItem()} label="Add Item" cta />
           </View>
         </View>
       ) : (
           <View style={styles.container}>
-            <Text style={styles.header}>Item not found</Text>
+            <Text style={styles.header}>Item Not Found</Text>
             <Text style={styles.text}>Add a product name and nutritional info to add an item to your library.</Text>
-            <View>
-              <Text style={styles.inputLabel}>Item Name</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="Organic Applesauce"
-                onChangeText={(text) => setName(text)}
-                autoCapitalize={'words'}
-                value={name} />
-              <Text style={styles.text}></Text>
-              <Text style={styles.inputLabel}>Calories</Text>
-              <TextInput
-                enablesReturnKeyAutomatically={true}
-                style={styles.input}
-                placeholder="0"
-                // keyboardType={'number-pad'}
-                returnKeyType={'next'}
-                onChangeText={(text) => setCalories(text)}
-                value={calories} />
-              <Text style={styles.inputLabel}>Protein</Text>
-              <TextInput
-                enablesReturnKeyAutomatically={true}
-                style={styles.input}
-                placeholder="0"
-                // keyboardType={'number-pad'}
-                returnKeyType={'next'}
-                onChangeText={(text) => setProtein(text)}
-                value={protein} />
-              <Text style={styles.inputLabel}>Fat</Text>
-              <TextInput
-                enablesReturnKeyAutomatically={true}
-                style={styles.input}
-                placeholder="0"
-                // keyboardType={'numeric'}
-                returnKeyType={'next'}
-                onChangeText={(text) => setFat(text)}
-                value={fat} />
-              <Text style={styles.inputLabel}>Carbohydrates</Text>
-              <TextInput
-                enablesReturnKeyAutomatically={true}
-                style={styles.input}
-                placeholder="0"
-                // keyboardType={'numeric'}
-                returnKeyType={'next'}
-                onChangeText={(text) => setCarbohydrates(text)}
-                value={carbohydrates} />
+            <View style={styles.inputContainer}>
+              <View>
+                <Text style={styles.inputLabel}>Item Name</Text>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Organic Applesauce"
+                  onChangeText={(text) => setName(text)}
+                  autoCapitalize={'words'}
+                  value={name} />
+              </View>
+              <View>
+                <Text style={styles.inputLabel}>Calories</Text>
+                <TextInput
+                  style={styles.input}
+                  enablesReturnKeyAutomatically={true}
+                  placeholder="0"
+                  // keyboardType={'number-pad'}
+                  returnKeyType={'next'}
+                  onChangeText={(text) => setCalories(text)}
+                  value={calories} />
+              </View>
+              <View>
+                <Text style={styles.inputLabel}>Protein</Text>
+                <TextInput
+                  enablesReturnKeyAutomatically={true}
+                  style={styles.input}
+                  placeholder="0"
+                  // keyboardType={'number-pad'}
+                  returnKeyType={'next'}
+                  onChangeText={(text) => setProtein(text)}
+                  value={protein} />
+              </View>
+              <View>
+                <Text style={styles.inputLabel}>Fat</Text>
+                <TextInput
+                  enablesReturnKeyAutomatically={true}
+                  style={styles.input}
+                  placeholder="0"
+                  // keyboardType={'numeric'}
+                  returnKeyType={'next'}
+                  onChangeText={(text) => setFat(text)}
+                  value={fat} />
+              </View>
+              <View>
+                <Text style={styles.inputLabel}>Carbohydrates</Text>
+                <TextInput
+                  enablesReturnKeyAutomatically={true}
+                  style={styles.input}
+                  placeholder="0"
+                  // keyboardType={'numeric'}
+                  returnKeyType={'next'}
+                  onChangeText={(text) => setCarbohydrates(text)}
+                  value={carbohydrates} />
+              </View>
             </View>
             <View style={styles.buttonContainer}>
-              <Button onPress={() => navigation.navigate('ScanBarcode')} label="Back" />
-              <Button onPress={() => handleOnPress()} label="Add Item" cta />
+              {/* <Button onPress={() => handleOnPress()} label="test" /> */}
+              <Button onPress={() => handleOnPress()} label="Scan Label" cta />
             </View>
           </View>
         )}
