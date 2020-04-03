@@ -5,15 +5,6 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { RDS } = require('./config');
 
-// const Conn = new sequelize(
-//   'testitem',
-//   'carforce',
-//   '',
-//   {
-//     dialect: 'postgres',
-//     host: 'localhost',
-//   }
-// );
 const Conn = new sequelize(
   RDS.database,
   RDS.user,
@@ -27,6 +18,7 @@ const Conn = new sequelize(
 const User = Conn.define('user', {
   email: { type: sequelize.STRING },
   password: { type: sequelize.STRING },
+  status: { type: sequelize.STRING },
   jwt: { type: sequelize.STRING },
   firstName: { type: sequelize.STRING },
   lastName: { type: sequelize.STRING },
@@ -76,7 +68,7 @@ const resetDB = () => {
       return bcrypt.hash(String('testpass'), 10, (err, hash) => {
         return Item.create({
           name: faker.commerce.productName(),
-          barcode: faker.random.number({ min: 10000000, max: 99999999 }),
+          barcode: `test-${faker.random.number({ min: 10000000, max: 99999999 })}`,
           barcodeType: faker.hacker.abbreviation(),
         }).then(item => {
           item.createNutrition({
@@ -90,6 +82,7 @@ const resetDB = () => {
           User.create({
             email: faker.internet.email().toLowerCase(),
             password: hash,
+            status: 'verified',
             firstName: faker.name.firstName(),
             lastName: faker.name.lastName(),
             // jwt: jwt.sign({ id: '666', exp: Math.floor(Date.now() / 1000) + (60 * 60) /* exp in 1h */ }, 'shhhhh'),
@@ -103,7 +96,7 @@ const resetDB = () => {
           //   });
           // });
         }).catch(err => {
-          console.log('db.js sync error:', err);
+          console.log(err);
         });
       });
     });
@@ -113,28 +106,12 @@ const resetDB = () => {
         id: 420,
         firstName: 'Matty',
         lastName: 'D.',
-        email: 'test@test.com',
+        email: '',
         password: hash,
+        status: 'admin',
         jwt: 'test',
-      }).then(user => {
-        // _.times(2, () => {
-        //   user.createFoodEntry({
-        //     itemId: faker.random.number({ min: 0, max: 10 }),
-        //     servingSize: faker.finance.amount(0.1, 2, 1),
-        //     dateCreated: date,
-        //     timeCreated: time,
-        //   });
-        // });
-        // _.times(2, () => {
-        //   user.createFoodEntry({
-        //     itemId: faker.random.number({ min: 0, max: 10 }),
-        //     servingSize: faker.finance.amount(0.1, 2, 1),
-        //     dateCreated: yesterdayDate,
-        //     timeCreated: time,
-        //   });
-        // });
       }).catch(err => {
-        console.log('db.js test user sync error:', err);
+        console.log(err);
       });
     });
   });

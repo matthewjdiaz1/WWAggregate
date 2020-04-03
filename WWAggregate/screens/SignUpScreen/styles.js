@@ -51,10 +51,8 @@ export default {
   buttonContainer: {
     position: "absolute",
     flexDirection: 'row',
-    justifyContent: "center",
-    alignItems: "center",
     bottom: 0,
-    paddingBottom: "30%",
-    paddingHorizontal: 40,
+    left: 20,
+    paddingBottom: 35,
   },
 };

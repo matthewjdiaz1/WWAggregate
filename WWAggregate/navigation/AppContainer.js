@@ -49,7 +49,7 @@ const AppContainer = createAppContainer(
     },
     {
       // initialRouteName: 'Auth',
-      initialRouteName: 'Home',
+      initialRouteName: 'Auth',
     },
   )
 );

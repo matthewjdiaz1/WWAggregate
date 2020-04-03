@@ -11,6 +11,11 @@ const jwt = require('jsonwebtoken');
 const { Op } = require('sequelize');
 
 const db = require('./db');
+const JWT_SECRET = 'superDuperTopSecret'; // TODO - add to config to prevent githup upload
+const JWT_OPTIONS = {
+  expiresIn: '5m',
+  issuer: 'WhoopMacros',
+};
 
 const User = new GraphQLObjectType({
   name: `User`,
@@ -28,6 +33,10 @@ const User = new GraphQLObjectType({
       password: {
         type: GraphQLString,
         resolve: (user) => user.password,
+      },
+      status: {
+        type: GraphQLString,
+        resolve: (user) => user.status,
       },
       jwt: {
         type: GraphQLString,
@@ -197,6 +206,7 @@ const Query = new GraphQLObjectType({
           firstName: { type: GraphQLString },
           lastName: { type: GraphQLString },
           email: { type: GraphQLString },
+          status: { type: GraphQLString },
           jwt: { type: GraphQLString },
           createdAt: { type: GraphQLString },
           updatedAt: { type: GraphQLString },
@@ -210,6 +220,7 @@ const Query = new GraphQLObjectType({
           firstName: { type: GraphQLString },
           lastName: { type: GraphQLString },
           email: { type: GraphQLString },
+          status: { type: GraphQLString },
           jwt: { type: GraphQLString },
           createdAt: { type: GraphQLString },
           updatedAt: { type: GraphQLString },
@@ -265,7 +276,8 @@ const Query = new GraphQLObjectType({
           updatedAt: { type: GraphQLString },
         },
         resolve: (root, args, context) => {
-          console.log('foodEntries args:', args);
+          console.log('foodEntries context:', context);
+          console.log('foodEntries context.user:', context.user);
           if (args.itemName) args.itemName = { [Op.like]: `%${args.itemName}%` };
           return db.models.foodEntry.findAll({ where: args });
         }
@@ -281,49 +293,61 @@ const Mutation = new GraphQLObjectType({
   fields() {
     return {
       signIn: {
-        type: User,
+        type: GraphQLString,
         args: {
-          email: { type: new GraphQLNonNull(GraphQLString) },
-          password: { type: new GraphQLNonNull(GraphQLString) },
+          email: { type: GraphQLString },
+          password: { type: GraphQLString },
+          jwt: { type: GraphQLString },
         },
-        resolve: async (root, args, context) => {
-          const user = await db.models.user.findOne({ where: { email: args.email.toLowerCase() } });
-          if (!user) throw new Error('Email not found');
-
-          const validPassword = await bcrypt.compare(args.password, user.password);
-          if (!validPassword) throw new Error('Incorrect password');
-
-          // If the users email and password match out database,
-          // return a JWT
-          // The client can store the JWT forever or until we set it to expire.
-          // https://medium.com/react-native-training/building-chatty-part-7-authentication-in-graphql-cd37770e5ab3
-          const token = jwt.sign({ userId: user.id, email: user.email }, 'testSecret', { expiresIn: '5m' });
-          user.jwt = token;
-          context.userId = user.id;
-          context.jwt = token;
-          await user.save();
-          console.log('context', context);
-          return user;
+        resolve: async (root, { email, password, jwt }, context) => {
+          console.log('signIn context.user:', context.user);
+          if (jwt) {
+            if (jwt.length < 30) return; // TODO - make this shit cleaner, wtf man
+            const user = await db.models.user.findOne({ where: { jwt: jwt } });
+            if (user) {
+              let newToken = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET);
+              user.jwt = newToken;
+              await user.save();
+              return newToken;
+            } else {
+              console.log('no user found with old jwt, returning null from signIn');
+              return;
+            }
+          } else {
+            const user = await db.models.user.findOne({ where: { email: args.email.toLowerCase() } });
+            if (!user) throw new Error('Email not found');
+            const validPassword = await bcrypt.compare(args.password, user.password);
+            if (!validPassword) throw new Error('Incorrect password');
+            let newToken = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET);
+            user.jwt = newToken;
+            await user.save();
+            return user.jwt;
+          }
         },
       },
       signUp: {
-        type: User,
+        type: GraphQLString,
         args: {
           email: { type: new GraphQLNonNull(GraphQLString) },
           password: { type: new GraphQLNonNull(GraphQLString) },
           firstName: { type: GraphQLString },
           lastName: { type: GraphQLString },
         },
-        resolve: async (root, args) => {
-          const existingUser = await db.models.user.findOne({ where: { email: args.email } });
+        resolve: async (root, { email, password }, context) => {
+          const existingUser = await db.models.user.findOne({ where: { email: email.toLowerCase() } });
           if (existingUser) throw new Error('Email already in use');
-          const hash = await bcrypt.hash(args.password, 10);
-          return db.models.user.create({
-            email: args.email.toLowerCase(),
+          // TODO - sanitize pass/email
+          const hash = await bcrypt.hash(password, 10);
+
+          let newUser = await db.models.user.create({
+            email: email.toLowerCase(),
             password: hash,
-            firstName: args.firstName,
-            lastName: args.lastName,
+            status: 'unverified',
           });
+          if (!newUser) throw new Error('Failed to create new user');
+          newUser.jwt = jwt.sign({ id: newUser.id, email: newUser.email }, JWT_SECRET);
+          await newUser.save();
+          return newUser.jwt;
         },
       },
       addItem: {
@@ -339,6 +363,8 @@ const Mutation = new GraphQLObjectType({
           carbohydrates: { type: GraphQLInt },
         },
         resolve: (root, args, context) => {
+          console.log('context from addItem:', JSON.stringify(context));
+          console.log('context.user after addItem:', context.user);
           return db.models.item.create({
             name: args.name,
             barcode: args.barcode || 'none',
