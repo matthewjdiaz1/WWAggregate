@@ -20,7 +20,9 @@ app.use(bodyParser.json());
 const server = new ApolloServer({
   schema,
   context: ({ req }) => {
-    console.log('server req.user:', req.user);
+    const { user, headers } = req;
+    console.log('server user:', user);
+    console.log('server headers.authorization:', headers.authorization);
     return {
       user: req.user,
     }
@@ -37,7 +39,4 @@ server.applyMiddleware({ app });
 
 app.listen(PORT, () => console.log(`
 ------------------------------------------------ Server started on port ${PORT} -------------------------------------------------
-
--------------------------------------------------- Your IP: ${ip.address()}. ----------------------------------------------------
-
-`));
+-------------------------------------------------- Your IP: ${ip.address()}. ----------------------------------------------------\n`));

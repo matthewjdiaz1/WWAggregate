@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
 import { withNavigation } from 'react-navigation';
-import { useQuery } from "@apollo/react-hooks";
+import { useQuery, useMutation } from "@apollo/react-hooks";
 import gql from "graphql-tag";
+import * as SecureStore from 'expo-secure-store';
 
+import ErrorMessage from '../../components/ErrorMessage';
 import MacroArc from '../../components/MacroArc';
 import Meal from '../../components/Meal';
 import LoadingIndicator from '../../components/LoadingIndicator';
@@ -13,20 +15,15 @@ import ProfileSVG from '../../components/SVGs/ProfileSVG';
 import styles from './styles';
 
 const HARDCODED_DATA = {
-  // calories: 2397,
   calories: 2387,
   protein: 150,
   carbohydrates: 330,
   fat: 53,
 };
 
-const AUTH_DATA = {
-  userId: 420,
-};
-
 const GET_FOOD_ENTRIES = gql`
-query FoodEntries($userId: Int, $dayCreated: String){
-  foodEntries(userId: $userId, dayCreated: $dayCreated) {
+query FoodEntries($dayCreated: String){
+  foodEntries(dayCreated: $dayCreated) {
     id
     userId
     itemId
@@ -34,10 +31,12 @@ query FoodEntries($userId: Int, $dayCreated: String){
     dayCreated
   }
 }`;
+const LOGOUT = gql`
+mutation Logout{
+  logout
+}`;
 
 const Dashboard = ({ navigation }) => {
-  // get all of signed in users mealEntries from todays date
-  const [userId, setUserId] = useState(AUTH_DATA.userId);
   const [goals, setGoals] = useState(HARDCODED_DATA);
   const [macros, setMacros] = useState({
     calories: [],
@@ -51,8 +50,9 @@ const Dashboard = ({ navigation }) => {
   const [fatEaten, setFatEaten] = useState(HARDCODED_DATA.fat);
   const [today, setToday] = useState(`${new Date().getFullYear()}-${(new Date().getMonth() + 1)}-${new Date().getDate()}`);
 
+  const [logout, { loading: logoutLoading, error: logoutError, data: logoutData, client: logoutClient }] = useMutation(LOGOUT);
   const { loading, error, data } = useQuery(GET_FOOD_ENTRIES, {
-    variables: { userId, dayCreated: today },
+    variables: { dayCreated: today },
   });
 
   const getMacros = (nutrition) => {
@@ -62,7 +62,6 @@ const Dashboard = ({ navigation }) => {
     macros.fat.push(nutrition.fat);
     setMacros(macros);
     calcMacros();
-
     // once last entry is pushed, calculate macros
     // if (data.foodEntries.length === macros.calories.length) calcMacros();
   };
@@ -85,9 +84,22 @@ const Dashboard = ({ navigation }) => {
     setFatEaten(goals.fat - newFat);
   };
 
+  const handleLogout = () => {
+    logout().then(({ data }) => {
+      if (data.logout === 'logged out') {
+        SecureStore.deleteItemAsync('userJWT')
+          .then(() => { navigation.navigate('Auth') });
+      } else {
+        throw new Error('failed to logout');
+      }
+    });
+  };
+
   if (loading) return <LoadingIndicator />;
   return (
     <View style={styles.container}>
+      <ErrorMessage error={error ? error : logoutError} />
+      {/* moment package to add comma to calories eaten */}
       <Text style={styles.header}>{caloriesEaten}</Text>
       <Text style={styles.headerText}>Calories Remaining</Text>
       <View style={styles.macroContainer}>
@@ -126,7 +138,7 @@ const Dashboard = ({ navigation }) => {
       </ScrollView>
       {/* <View style={styles.footerFader}><Text>test</Text></View> */}
       <View style={styles.footerContainer}>
-        <ProfileSVG onPress={() => { console.log('goals', goals) }} />
+        <ProfileSVG onPress={() => handleLogout()} />
         <AddMealSVG onPress={() => { navigation.navigate('Add') }} />
         <SettingsSVG onPress={() => { console.log('does not work') }} />
       </View>

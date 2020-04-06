@@ -45,7 +45,7 @@ const FoodEntry = Conn.define('foodEntry', {
   userId: { type: sequelize.INTEGER },
   itemId: { type: sequelize.INTEGER },
   itemName: { type: sequelize.STRING },
-  servingSize: { type: sequelize.INTEGER }, // TODO - investigate FLOAT here
+  servingSize: { type: sequelize.INTEGER },
   servingUnit: { type: sequelize.STRING },
   dayCreated: { type: sequelize.STRING },
   createdAt: { type: sequelize.DATE },
@@ -79,14 +79,13 @@ const resetDB = () => {
             sugar: faker.random.number({ min: 0, max: 60 }),
           });
         }).then(() => {
-          User.create({
-            email: faker.internet.email().toLowerCase(),
-            password: hash,
-            status: 'verified',
-            firstName: faker.name.firstName(),
-            lastName: faker.name.lastName(),
-            // jwt: jwt.sign({ id: '666', exp: Math.floor(Date.now() / 1000) + (60 * 60) /* exp in 1h */ }, 'shhhhh'),
-          })
+          // User.create({
+          //   email: faker.internet.email().toLowerCase(),
+          //   password: hash,
+          //   status: 'verified',
+          //   firstName: faker.name.firstName(),
+          //   lastName: faker.name.lastName(),
+          // })
           // .then(user => {
           //   user.createFoodEntry({
           //     itemId: faker.random.number({ min: 0, max: 10 }),
@@ -101,18 +100,15 @@ const resetDB = () => {
       });
     });
 
-    return bcrypt.hash('', 10, (err, hash) => {
+    return bcrypt.hash('p', 10, (err, hash) => {
       return User.create({
         id: 420,
         firstName: 'Matty',
         lastName: 'D.',
-        email: '',
+        email: 'matthewjdiaz1@gmail.com',
         password: hash,
         status: 'admin',
-        jwt: 'test',
-      }).catch(err => {
-        console.log(err);
-      });
+      }).catch(err => { console.log(err) });
     });
   });
 };

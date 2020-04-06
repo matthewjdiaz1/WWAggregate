@@ -276,6 +276,7 @@ const Query = new GraphQLObjectType({
           updatedAt: { type: GraphQLString },
         },
         resolve: (root, args, context) => {
+          if (!args.userId) args.userId = context.user.id;
           console.log('foodEntries context:', context);
           console.log('foodEntries context.user:', context.user);
           if (args.itemName) args.itemName = { [Op.like]: `%${args.itemName}%` };
@@ -299,13 +300,13 @@ const Mutation = new GraphQLObjectType({
           password: { type: GraphQLString },
           jwt: { type: GraphQLString },
         },
-        resolve: async (root, { email, password, jwt }, context) => {
+        resolve: async (root, args, context) => {
           console.log('signIn context.user:', context.user);
-          if (jwt) {
-            if (jwt.length < 30) return; // TODO - make this shit cleaner, wtf man
-            const user = await db.models.user.findOne({ where: { jwt: jwt } });
+          if (args.jwt) {
+            if (args.jwt.length < 30) return; // TODO - make cleaner
+            const user = await db.models.user.findOne({ where: { jwt: args.jwt } });
             if (user) {
-              let newToken = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET);
+              const newToken = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET);
               user.jwt = newToken;
               await user.save();
               return newToken;
@@ -315,9 +316,10 @@ const Mutation = new GraphQLObjectType({
             }
           } else {
             const user = await db.models.user.findOne({ where: { email: args.email.toLowerCase() } });
-            if (!user) throw new Error('Email not found');
+            if (!user) throw new Error('Email not found.');
             const validPassword = await bcrypt.compare(args.password, user.password);
-            if (!validPassword) throw new Error('Incorrect password');
+            if (!validPassword) throw new Error('Incorrect password.');
+
             let newToken = jwt.sign({ id: user.id, email: user.email }, JWT_SECRET);
             user.jwt = newToken;
             await user.save();
@@ -335,7 +337,7 @@ const Mutation = new GraphQLObjectType({
         },
         resolve: async (root, { email, password }, context) => {
           const existingUser = await db.models.user.findOne({ where: { email: email.toLowerCase() } });
-          if (existingUser) throw new Error('Email already in use');
+          if (existingUser) throw new Error('Email already in use.');
           // TODO - sanitize pass/email
           const hash = await bcrypt.hash(password, 10);
 
@@ -344,10 +346,27 @@ const Mutation = new GraphQLObjectType({
             password: hash,
             status: 'unverified',
           });
-          if (!newUser) throw new Error('Failed to create new user');
+          if (!newUser) throw new Error('Failed to create new user...');
           newUser.jwt = jwt.sign({ id: newUser.id, email: newUser.email }, JWT_SECRET);
           await newUser.save();
           return newUser.jwt;
+        },
+      },
+      logout: {
+        type: GraphQLString,
+        args: {
+          jwt: { type: GraphQLString },
+        },
+        resolve: async (root, args, context) => {
+          console.log('from logout..')
+          console.log('context.user', context.user);
+          console.log('context', context);
+          const user = await db.models.user.findOne({ where: { id: context.user.id } });
+          if (!user) throw new Error('Not logged in');
+
+          user.jwt = null;
+          await user.save();
+          return 'logged out';
         },
       },
       addItem: {

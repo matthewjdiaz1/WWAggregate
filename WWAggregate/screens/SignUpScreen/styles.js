@@ -55,4 +55,15 @@ export default {
     left: 20,
     paddingBottom: 35,
   },
+  errorContainer: {
+    // flex: 1,
+  },
+  errorText: {
+    top: 60,
+    fontSize: 18,
+    marginBottom: 10,
+    color: 'red',
+    position: 'absolute',
+    alignSelf: 'center',
+  },
 };
