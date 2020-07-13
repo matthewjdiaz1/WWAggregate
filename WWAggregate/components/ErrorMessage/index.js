@@ -12,22 +12,10 @@ const ErrorMessage = (props) => {
 
   const traverseError = (e) => {
     if (typeof e === 'object' && e !== null) {
-      if (typeof e.message === 'string') {
-        e.message.split(' ')[0] === 'GraphQL' ? setErrorMessage(e.message.slice(15)) : setErrorMessage(e.message);
-        return;
-      }
-      if (e.email) {
-        setErrorMessage(e.email.message);
-        return;
-      }
-      if (e.password) {
-        setErrorMessage(e.password.message);
-        return;
-      }
-    } else if (typeof e === 'string') {
-      setErrorMessage(e);
-    }
-    return;
+      if (typeof e.message === 'string') return e.message.split(' ')[0] === 'GraphQL' ? setErrorMessage(e.message.slice(15)) : setErrorMessage(e.message);
+      if (e.email) return setErrorMessage(e.email.message);
+      if (e.password) return setErrorMessage(e.password.message);
+    } else if (typeof e === 'string') return setErrorMessage(e);
   };
 
   return (

@@ -2,7 +2,7 @@ export default {
   container: {
     flex: 1,
     flexDirection: 'column',
-    backgroundColor: "#FFFFFF",
+    backgroundColor: '#FFFFFF',
   },
   caretLeftContainer: {
     // position: 'relative',
@@ -24,7 +24,7 @@ export default {
     marginHorizontal: 21,
     marginTop: 28,
     // borderColor: 'blue',
-    // borderStyle: "solid",
+    // borderStyle: 'solid',
     // borderWidth: 2,
   },
   profilePic: {
@@ -35,13 +35,13 @@ export default {
     shadowOpacity: 0.12,
   },
   profilePicText: {
-    fill: "#000000",
+    fill: '#E4E9F4',
     fontWeight: '500',
     fontSize: 12,
     lineHeight: 19,
-    x: "31",
-    y: "36",
-    textAnchor: "middle",
+    x: '31',
+    y: '36',
+    textAnchor: 'middle',
   },
   profileNameContainer: {
     marginLeft: 20,

@@ -21,7 +21,7 @@ export default {
   },
   searchContainer: {
     marginTop: 20,
-    borderStyle: "solid",
+    borderStyle: 'solid',
     borderRadius: 2,
     flexDirection: 'row',
     justifyContent: 'center',

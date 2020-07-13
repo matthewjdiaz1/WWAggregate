@@ -15,22 +15,24 @@ import styles from './styles';
  * from here we need to find a quick, easy, and intuitive way to add item meals for today.
  * eveytime i have a pb&j i don't want to have to scan 3 barcodes.
  * i don't want to have to search for three items, either. (peanut butter, jelly, bread)
- * i need some type of meal system to add previous meals i've had
+ * i need some type of meal system to add previous meals i've had (group items together)
  * 
- * perhaps when we scan a barcode, it adds it to our "pantry", or items that we ofter use(or have ever use)
- * and maybe we can create meals or recipies from multiple items.
+ * perhaps when we scan a barcode, it adds it to our "pantry", or items that we often use(or have ever used)
+ * we can create meals or recipies from multiple items.
+ * 
+ * //////////////////////////// SYSTEM DESIGN QUESTIONS ////////////////////////////
+ * TABLE EVERYTHING OUT => USER, GOALS(MACROS, WEIGHT), ITEMS, FOODENTRIES, EVEERYYYYTHING
+ * HOW DO YOU WANT THEM TO BE SEARCHED?
+ * USER IS ALWAYS KNOW, SO HOW DO YOU WANT TO SEARCH FOR ITEMS, FOOD ENTRIES, NUTRITION => CALORIES
+ * SEARCHING => BE MINDFUL OF DEBOUNCING AND WILDCARD SHIT
+ * ////////////////////////////////////////////////////////////////////////////////
  */
 
-const AUTH_DATA = {
-  userId: 420,
-};
 const GET_ENTRIES = gql`
-query AllEntries($userId: Int!, $itemName: String){
-  foodEntries(userId: $userId, itemName: $itemName){
+query AllEntries ($itemName: String) {
+  foodEntries (itemName: $itemName) {
     id
-    itemName
     servingSize
-    servingUnit
     updatedAt
     item {
       id
@@ -44,57 +46,35 @@ query AllEntries($userId: Int!, $itemName: String){
     }
   }
 }`;
-// TODO - research order by updatedAt(newest first) before render
-// https://hasura.io/learn/graphql/react-native/queries/2-create-query/
-// possible example...
-const FETCH_TODOS = gql`
-query {
-  todos (
-    order_by: {
-      created_at: desc
-    },
-    where: { is_public: { _eq: false} }
-  ) {
-    id
-    title
-    is_completed
-    created_at
-    is_public
-    user {
-      name
-    }
-  }
-}`;
 
 const AddFoodScreen = ({ navigation }) => {
-  const [userId, setUserId] = useState(AUTH_DATA.userId);
   const [search, setSearch] = useState('');
   const [resultsHeader, setResultsHeader] = useState('History');
   const [debounceInterval, setDebounceInterval] = useState(null);
 
-  const { loading, error, data, refetch, networkStatus } = useQuery(GET_ENTRIES, {
-    variables: { userId },
-  });
+  const { loading, error, data, refetch } = useQuery(GET_ENTRIES);
 
-  const handleSearchInput = (text) => {
+  const handleTextChange = text => {
     if (debounceInterval) setDebounceInterval(clearInterval(debounceInterval));
     if (text !== '') {
       setDebounceInterval(setTimeout(() => {
-        refetch({ userId, itemName: text });
-      }, 300));
+        refetch({ itemName: text })
+          .then(data => console.log(data))
+          .catch(err => console.log('err', err.message || err));
+      }, 500));
     } else {
-      console.log('empty search');
       setDebounceInterval(setTimeout(() => {
-        refetch({ userId })
-          .then((searchData) => console.log('empty search data', searchData));
-        setResultsHeader('History');
-      }, 300));
+        refetch()
+          .then(data => console.log('empty search data', data))
+          .catch(err => console.log('err', err.message || err));
+        // setResultsHeader('History');
+      }, 500));
     }
     setResultsHeader('Results');
     setSearch(text);
   };
 
-  const handleSearchSubmit = (text) => {
+  const handleSearchSubmit = text => {
     console.log('search submit');
     if (debounceInterval) setDebounceInterval(clearInterval(debounceInterval));
     // setResultsHeader('Results');
@@ -102,7 +82,8 @@ const AddFoodScreen = ({ navigation }) => {
     // setSearch(text);
   };
 
-  if (error) return <View style={styles.container}><Text>{error.message}</Text></View>;
+  // if (error) return <View style={styles.container}><Text>{error.message}</Text></View>;
+  if (error) console.log('addFoodScreen error', error.message || error);
   return (
     <View style={styles.container}>
       <View style={styles.headerContainer}>
@@ -119,7 +100,7 @@ const AddFoodScreen = ({ navigation }) => {
           style={styles.input}
           placeholder="Search for a food"
           autoCapitalize={'words'}
-          onChangeText={(text) => handleSearchInput(text)}
+          onChangeText={(text) => handleTextChange(text)}
           // onSubmitEditing={(text) => handleSearchSubmit(text)} // submit
           value={search} />
       </View>
@@ -140,7 +121,7 @@ const AddFoodScreen = ({ navigation }) => {
           )) : (
               <View>
                 <View style={styles.itemContainer}>
-                  <LoadingIndicator text={'Loading meal history.'} />
+                  <LoadingIndicator text='Loading meal history...' />
                 </View>
               </View>
             )}

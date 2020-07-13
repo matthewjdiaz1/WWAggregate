@@ -21,7 +21,7 @@ const MacroArc = ({ macros }) => (
       cornerRadius={0}
     />
     <Svg style={styles.svgCircle} width="73" height="73" viewBox="-4 -4 69 69" fill="none">
-      <Circle cx="30.5" cy="30.5" r="30.5" fill="#FFFFFF" />
+      <Circle cx="" cy="" r="" fill="#FFFFFF" />
       <SvgText style={styles.circleText}>{macros.actual + 'g'}</SvgText>
     </Svg>
     <Text style={styles.text}>{macros.text}</Text>

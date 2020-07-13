@@ -156,15 +156,11 @@ const FoodEntry = new GraphQLObjectType({
       },
       user: {
         type: User,
-        resolve: (foodEntry) => db.models.item.findOne({ where: { id: foodEntry.itemId } }),
+        resolve: (foodEntry) => db.models.user.findOne({ where: { id: foodEntry.userId } }),
       },
       itemId: {
         type: GraphQLInt,
         resolve: (foodEntry) => foodEntry.itemId,
-      },
-      itemName: {
-        type: GraphQLString,
-        resolve: (foodEntry) => foodEntry.itemName,
       },
       item: {
         type: Item,
@@ -173,10 +169,6 @@ const FoodEntry = new GraphQLObjectType({
       servingSize: {
         type: GraphQLInt,
         resolve: (foodEntry) => foodEntry.servingSize,
-      },
-      servingUnit: {
-        type: GraphQLString,
-        resolve: (foodEntry) => foodEntry.servingUnit,
       },
       dayCreated: {
         type: GraphQLString,
@@ -268,19 +260,46 @@ const Query = new GraphQLObjectType({
           id: { type: GraphQLInt },
           userId: { type: GraphQLInt },
           itemId: { type: GraphQLInt },
-          itemName: { type: GraphQLString },
           servingSize: { type: GraphQLInt },
-          servingUnit: { type: GraphQLString },
-          dayCreated: { type: GraphQLString },
+          from: { type: GraphQLString },
+          to: { type: GraphQLString },
+          itemName: { type: GraphQLString },
           createdAt: { type: GraphQLString },
           updatedAt: { type: GraphQLString },
         },
-        resolve: (root, args, context) => {
+        resolve: async (root, args, context) => {
           if (!args.userId) args.userId = context.user.id;
-          console.log('foodEntries context:', context);
-          console.log('foodEntries context.user:', context.user);
-          if (args.itemName) args.itemName = { [Op.like]: `%${args.itemName}%` };
-          return db.models.foodEntry.findAll({ where: args });
+          // if (args.day === 'all') {
+          //   if (args.itemName) {
+          //     args = { userId: args.userId, itemName: args.itemName };
+          //   } else {
+          //     args = { userId: args.userId };
+          //   }
+          // } else if (!args.createdAt) {
+          //   let now = new Date();
+          //   let twentyFourHoursAgo = new Date(now);
+          //   twentyFourHoursAgo.setDate(twentyFourHoursAgo.getDate() - 1); // days
+          //   // twentyFourHoursAgo.setHours(twentyFourHoursAgo.getHours() - 1); // hours
+          //   let twoAMToday = new Date();
+          //   twoAMToday.setHours(2);
+          //   twoAMToday.setMinutes(0);
+          //   args.createdAt = { [Op.between]: [twoAMToday, now] }
+          // } else {
+          //   // TODO => calculate passed in day
+          //   console.log('TODO ... passed in createdAt =>', args.createdAt);
+          //   // args.createdAt = { [Op.between]: [twoAMToday, now] }
+          // }
+          if (args.from) {
+            args = { createdAt: { [Op.between]: [args.from, args.to] }, userId: args.userId };
+          } else if (args.itemName) {
+            console.log('else args', args);
+            // args = { item: { [Op.like]: `%${args.itemName}%` }, userId: args.userId }; // wildcard search
+            args.itemName = { [Op.like]: `%${args.itemName}%` }; // wildcard search
+          }
+
+          console.log('foodEntries args:', args);
+          // if (args.itemName) args.itemName = { [Op.like]: `%${args.itemName}%` }; // wildcard search
+          return db.models.foodEntry.findAll({ where: args, order: [['updatedAt', 'DESC']] });
         }
       },
       // ...
@@ -301,7 +320,7 @@ const Mutation = new GraphQLObjectType({
           jwt: { type: GraphQLString },
         },
         resolve: async (root, args, context) => {
-          console.log('signIn context.user:', context.user);
+          console.log('signIn => context.user:', context.user);
           if (args.jwt) {
             if (args.jwt.length < 30) return; // TODO - make cleaner
             const user = await db.models.user.findOne({ where: { jwt: args.jwt } });
@@ -382,8 +401,7 @@ const Mutation = new GraphQLObjectType({
           carbohydrates: { type: GraphQLInt },
         },
         resolve: (root, args, context) => {
-          console.log('context from addItem:', JSON.stringify(context));
-          console.log('context.user after addItem:', context.user);
+          console.log('addItem => context.user after:', context.user);
           return db.models.item.create({
             name: args.name,
             barcode: args.barcode || 'none',
@@ -392,46 +410,39 @@ const Mutation = new GraphQLObjectType({
             return item.createNutrition({
               calories: args.calories,
               protein: args.protein,
-              sugar: args.sugar,
+              fat: args.fat,
               carbohydrates: args.carbohydrates,
             });
-          }).catch(err => {
-            console.log('err from server/schema.js', err);
-          });
+          }).catch(err => console.log('err from server/schema.js', err));
         }
       },
       addFoodEntry: {
         type: FoodEntry,
         args: {
-          userId: { type: new GraphQLNonNull(GraphQLInt) },
           itemId: { type: new GraphQLNonNull(GraphQLInt) },
+          userId: { type: GraphQLInt },
           itemName: { type: GraphQLString },
           servingSize: { type: GraphQLInt },
-          servingUnit: { type: GraphQLString },
-          dayCreated: { type: GraphQLString },
           createdAt: { type: GraphQLString },
           updatedAt: { type: GraphQLString },
         },
         resolve: async (root, args, context) => {
+          console.log('addFoodEntry => args before:', args);
+          if (!args.userId) args.userId = context.user.id;
+          console.log('addFoodEntry => args after:', args);
+
           const user = await db.models.user.findOne({ where: { id: args.userId } });
           if (!user) throw new Error('User not found, how are you here?');
 
           const item = await db.models.item.findOne({ where: { id: args.itemId } });
-          const { name } = item;
-          if (!user) throw new Error('User not found, how are you here?');
+          if (!user) throw new Error('no... item found?');
 
-          const today = new Date();
-          const date = `${today.getFullYear()}-${(today.getMonth() + 1)}-${today.getDate()}`;
           // return foodEntry with passed in userId and foodId association
           return user.createFoodEntry({
             itemId: args.itemId,
-            itemName: args.itemName || name,
+            itemName: item.name,
             servingSize: args.servingSize || 1,
-            servingUnit: args.servingUnit,
-            dayCreated: date,
-          }).catch(err => {
-            console.log('err creating footEntry:', err);
-          });
+          }).catch(err => console.log('err creating footEntry:', err));
         }
       },
       // ...

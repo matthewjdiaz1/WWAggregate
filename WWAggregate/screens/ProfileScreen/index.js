@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 import { withNavigation } from 'react-navigation';
 import { useQuery, useMutation } from '@apollo/react-hooks';
 import gql from 'graphql-tag';
-import * as SecureStore from 'expo-secure-store';
 import Svg, { Circle, Text as SvgText } from 'react-native-svg';
+
+import * as SecureStore from 'expo-secure-store';
 
 import LoadingIndicator from '../../components/LoadingIndicator';
 import ErrorMessage from '../../components/ErrorMessage';
@@ -14,9 +15,7 @@ import CalSVG from '../../components/SVGs/CalSVG';
 import ScaleSVG from '../../components/SVGs/ScaleSVG';
 import styles from './styles';
 
-const months = ["January", "February", "March", "April", "May", "June",
-  "July", "August", "September", "October", "November", "December"
-];
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 const HARDCODED_PROFILE_DATA = {
   location: 'San Francisco',
   name: 'Matthew Diaz',
@@ -50,6 +49,21 @@ const Profile = ({ navigation }) => {
 
   const [logout, { loading, error, data, client }] = useMutation(LOGOUT);
 
+  const handleLogout = () => {
+    console.log('test');
+    setDisplayScreen(false);
+    logout()
+      .then(({ data }) => {
+        if (data.logout === 'logged out') {
+          SecureStore.deleteItemAsync('userJWT')
+            .then(() => { navigation.navigate('Auth') })
+            .catch(err => console.log('err:', err.message || err));
+        } else {
+          throw new Error('failed to logout');
+        }
+      });
+  };
+
   if (!displayScreen) return <LoadingIndicator text='Logging out...' />;
   if (loading) return <LoadingIndicator />;
   return (
@@ -69,11 +83,11 @@ const Profile = ({ navigation }) => {
         </Svg>
         <View style={styles.profileNameContainer}>
           <Text style={styles.accountNameText}>{HARDCODED_PROFILE_DATA.name}</Text>
-          <Text style={styles.accountJoinedText}>Joined {months[HARDCODED_PROFILE_DATA.createdAt.getMonth()]} {HARDCODED_PROFILE_DATA.createdAt.getFullYear()}</Text>
+          <Text style={styles.accountJoinedText}>Joined {MONTHS[HARDCODED_PROFILE_DATA.createdAt.getMonth()]} {HARDCODED_PROFILE_DATA.createdAt.getFullYear()}</Text>
         </View>
       </View>
 
-      <TouchableOpacity onPress={() => console.log('press')}>
+      <TouchableOpacity onPress={() => handleLogout()}>
         <View style={styles.editProfileButtonContainer}>
           <Text style={styles.editProfileButtonText}>Edit Profile</Text>
         </View>

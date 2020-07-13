@@ -17,9 +17,9 @@ mutation SignIn($email: String, $password: String, $jwt: String){
 }`;
 
 const SignInScreen = ({ navigation }) => {
+  const [displayScreen, setDisplayScreen] = useState(false);
   const passwordRef = useRef();
   const { register, handleSubmit, setValue } = useForm(); // initialise the hook
-  const [displayScreen, setDisplayScreen] = useState(false);
   const [signIn, { loading, error, data, client }] = useMutation(SIGN_IN);
 
   useEffect(() => {
@@ -28,9 +28,9 @@ const SignInScreen = ({ navigation }) => {
       if (jwt) {
         signIn({ variables: { jwt } }).then(({ data }) => {
           if (data.signIn !== null) {
-            SecureStore.setItemAsync('userJWT', data.signIn).then(() => {
-              navigation.navigate('Home');
-            }).catch(err => console.log('err:', err.message || err));
+            SecureStore.setItemAsync('userJWT', data.signIn)
+              .then(() => navigation.navigate('Home'))
+              .catch(err => console.log('err:', err.message || err));
           } else {
             setDisplayScreen(true);
           }
@@ -49,27 +49,20 @@ const SignInScreen = ({ navigation }) => {
   const onSubmit = formData => {
     const email = formData.email || '';
     const password = formData.password || '';
-
     setDisplayScreen(false);
+
     signIn({ variables: { email, password } })
-      .then(({ data }) => {
-        console.log('data for securestore', data);
-        if (data.signIn !== null) {
-          SecureStore.setItemAsync('userJWT', data.signIn)
-            .then(() => { navigation.navigate('Home') });
-        } else {
-          console.log('signIn failed. data:', data);
-        }
-        return;
-      })
+      .then(({ data }) => SecureStore.setItemAsync('userJWT', data.signIn))
+      .then(() => navigation.navigate('Home'))
       .catch(err => {
-        console.log('err:', err.message || err)
+        console.log('err:', err.message || err);
         setDisplayScreen(true);
+        throw new Error('Sign in failed.');
       });
   };
 
+  if (!displayScreen) return <LoadingIndicator text='Logging in...' />;
   if (loading) return <LoadingIndicator />;
-  if (!displayScreen) return <LoadingIndicator />;
 
   return (
     <View style={styles.container}>
@@ -105,7 +98,7 @@ const SignInScreen = ({ navigation }) => {
           onSubmitEditing={handleSubmit(onSubmit)}
         />
       </View>
-      <Text style={[styles.text, { color: 'black' }]} onPress={() => navigation.navigate('SignUp')}>New user? Sign up
+      <Text style={styles.text} onPress={() => navigation.navigate('SignUp')}>New user? Sign up
         <Text style={[styles.text, { color: 'red', fontWeight: '600' }]} onPress={() => navigation.navigate('SignUp')}> here</Text>
         .
       </Text>
@@ -114,6 +107,6 @@ const SignInScreen = ({ navigation }) => {
       </View>
     </View >
   );
-}
+};
 
 export default withNavigation(SignInScreen);

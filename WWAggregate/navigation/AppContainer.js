@@ -3,7 +3,9 @@ import { createStackNavigator } from 'react-navigation-stack';
 
 import SignInScreen from '../screens/SignInScreen';
 import SignUpScreen from '../screens/SignUpScreen';
+import Profile from '../screens/ProfileScreen';
 import Dashboard from '../screens/Dashboard';
+import EditFoodScreen from '../screens/EditFoodScreen';
 import ScanBarcodeScreen from '../screens/ScanBarcodeScreen';
 import AddFoodScreen from '../screens/AddFoodScreen';
 import ScanNutritionScreen from '../screens/ScanNutritionScreen';
@@ -21,10 +23,13 @@ const AuthStack = createStackNavigator(
 );
 const HomeStack = createStackNavigator(
   {
+    Profile,
     Dashboard,
+    EditFoodScreen,
   },
   {
-    defaultNavigationOptions: { headerShown: false }
+    initialRouteName: 'Dashboard',
+    defaultNavigationOptions: { headerShown: false },
   },
 );
 const AddFoodStack = createStackNavigator(
@@ -45,10 +50,9 @@ const AppContainer = createAppContainer(
     {
       Auth: AuthStack,
       Home: HomeStack,
-      Add: AddFoodStack,
+      AddFoodStack: AddFoodStack,
     },
     {
-      // initialRouteName: 'Auth',
       initialRouteName: 'Auth',
     },
   )

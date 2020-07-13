@@ -20,10 +20,18 @@ const User = Conn.define('user', {
   password: { type: sequelize.STRING },
   status: { type: sequelize.STRING },
   jwt: { type: sequelize.STRING },
-  firstName: { type: sequelize.STRING },
-  lastName: { type: sequelize.STRING },
   createdAt: { type: sequelize.DATE },
   updatedAt: { type: sequelize.DATE },
+});
+const UserDate = Conn.define('userData', {
+  // TODO - better? 
+});
+const UserInfo = Conn.define('userInfo', {
+  firstName: { type: sequelize.STRING },
+  lastName: { type: sequelize.STRING },
+  location: { type: sequelize.STRING },
+  dob: { type: sequelize.STRING },
+  weight: { type: sequelize.STRING },
 });
 const Item = Conn.define('item', {
   name: { type: sequelize.STRING },
@@ -46,7 +54,6 @@ const FoodEntry = Conn.define('foodEntry', {
   itemId: { type: sequelize.INTEGER },
   itemName: { type: sequelize.STRING },
   servingSize: { type: sequelize.INTEGER },
-  servingUnit: { type: sequelize.STRING },
   dayCreated: { type: sequelize.STRING },
   createdAt: { type: sequelize.DATE },
   updatedAt: { type: sequelize.DATE },
@@ -105,7 +112,7 @@ const resetDB = () => {
         id: 420,
         firstName: 'Matty',
         lastName: 'D.',
-        email: 'matthewjdiaz1@gmail.com',
+        email: 'test',
         password: hash,
         status: 'admin',
       }).catch(err => { console.log(err) });

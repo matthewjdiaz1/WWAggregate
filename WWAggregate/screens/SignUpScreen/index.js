@@ -17,6 +17,7 @@ mutation SignUp($email: String!, $password: String!) {
 }`;
 
 const SignUpScreen = ({ navigation }) => {
+  const [displayScreen, setDisplayScreen] = useState(true);
   const passwordRef = useRef();
   const confirmPasswordRef = useRef();
   const { register, handleSubmit, setValue, errors, setError, clearError } = useForm();
@@ -41,21 +42,26 @@ const SignUpScreen = ({ navigation }) => {
 
     if (confirmPassword !== password) return setError("password", "notMatch", "Passwords must match.");
 
+    setDisplayScreen(false);
     signUp({ variables: { email, password } })
       .then(({ data }) => {
-        console.log('data.signUp after singUp', data.signUp);
         if (data.signUp !== null) {
           SecureStore.setItemAsync('userJWT', data.signUp)
             .then(() => { navigation.navigate('Home') });
         } else {
           console.log('failed to create new user');
+          throw new Error('failed to create new user');
         }
         clearError();
       })
-      .catch(err => { console.log('signUp .catch', err || err.message) });
+      .catch(err => {
+        console.log('signUp .catch', err || err.message);
+        setDisplayScreen(true);
+      });
   };
 
-  if (loading) return <LoadingIndicator />
+  if (!displayScreen) return <LoadingIndicator text='Signing Up...' />;
+  if (loading) return <LoadingIndicator />;
   return (
     <View style={styles.container}>
       <ErrorMessage error={errors.email || errors.password ? errors : error} />
@@ -109,6 +115,6 @@ const SignUpScreen = ({ navigation }) => {
       </View>
     </View>
   );
-}
+};
 
 export default withNavigation(SignUpScreen);

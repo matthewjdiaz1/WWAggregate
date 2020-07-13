@@ -31,11 +31,11 @@ const ScanBarcodeScreen = ({ navigation }) => {
     <View style={styles.container}>
       <CameraOverlay top={277} bottom={277} left={20} right={20} />
       <XButton onPress={() => navigation.goBack()} />
+      <Text style={styles.text}>Scan a barcode</Text>
       <BarCodeScanner
         onPress={() => props.toggle()}
         onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
         style={styles.scannerBorder} />
-      <Text style={styles.text}>Scan a barcode</Text>
     </View>
   );
 }
