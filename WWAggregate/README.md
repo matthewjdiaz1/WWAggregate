@@ -1,5 +1,7 @@
 # Whoop Macros
 
+![](macrozz.gif)
+
 1. [Installing Dependencies](#installing-dependencies)
 1. [Config Files](#config-files)
 
